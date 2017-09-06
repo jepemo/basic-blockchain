@@ -1,7 +1,7 @@
 # basic-blockchain
 Basic cryptocurrency, based on blockchain, implemented in Python
 
-## Inspited by
+## Inspired by
 
 Building Blochain in go:
 
