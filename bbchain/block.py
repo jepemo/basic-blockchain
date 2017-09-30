@@ -13,12 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-class Block:
-    def __init__(self):
-        self.timestamp = None
-        self.data = None
-        self.prevBlockHash = None
-        self.hash = initHash()
+import hashlib
+import time
 
-    def initHash(self):
-        pass
+class Block(object):
+    def __init__(self, data, prev_block_hash):
+        self.timestamp = time.time()
+        self.data = data
+        self.prev_block_hash = prev_block_hash
+        self.hash = self.create_hash()
+
+    def create_hash(self):
+        hlib = hashlib.sha256()
+        hlib.update(''.join([str(self.timestamp), str(self.prev_block_hash), str(self.data)]))
+        return hlib.digest()
