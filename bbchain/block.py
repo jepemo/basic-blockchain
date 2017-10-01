@@ -15,14 +15,20 @@
 
 import hashlib
 import time
+from bbchain.pow import ProofOfWork
 
 class Block(object):
     def __init__(self, data, prev_block_hash):
         self.timestamp = time.time()
         self.data = data
         self.prev_block_hash = prev_block_hash
-        self.hash = self.create_hash()
+        #self.hash = self.create_hash()
 
+        pWork = ProofOfWork(self)
+        self.hash, self.nonce = pWork.run()
+
+    """
     def create_hash(self):
         concat = ''.join([str(self.timestamp), str(self.prev_block_hash), str(self.data)])
         return hashlib.sha256(concat.encode('utf8')).digest()
+    """

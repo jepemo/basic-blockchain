@@ -17,10 +17,10 @@ from bbchain.blockchain import BlockChain
 
 def main():
     bc = BlockChain()
-    
+
     bc.add_block("Send 1 BTC to Ivan")
     bc.add_block("Send 2 more BTC to Ivan")
-    
+
     for block in bc.blocks:
         print ("Prev. hash:", block.prev_block_hash)
         print ("Data:", block.data)
