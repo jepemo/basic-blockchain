@@ -13,17 +13,17 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.blockchain import BlockChain
+from bbchain.block import Block
 
-def main():
-    print("Start")
-    bc = BlockChain()
-    
-    bc.add_block("Send 1 BTC to Ivan")
-    bc.add_block("Send 2 more BTC to Ivan")
-    
-    for block in bc.blocks:
-        print ("Prev. hash:", block.prev_block_hash)
-        print ("Data:", block.data)
-        print ("Hash:", block.hash)
-        print ("")
+class BlockChain(object):
+	def __init__(self):
+		self.blocks = []
+		self.blocks.append(self.create_genesis_block())
+		
+	def add_block(self, data):
+		prev_block = self.blocks[len(self.blocks)-2]
+		new_block = Block(data, prev_block.hash)
+		self.blocks.append(new_block)
+		
+	def create_genesis_block(self):
+		return Block("Genesis Block", b'')

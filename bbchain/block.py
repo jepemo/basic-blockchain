@@ -25,5 +25,6 @@ class Block(object):
 
     def create_hash(self):
         hlib = hashlib.sha256()
-        hlib.update(''.join([str(self.timestamp), str(self.prev_block_hash), str(self.data)]))
+        concat = ''.join([str(self.timestamp), str(self.prev_block_hash), str(self.data)])
+        hlib.update(concat.encode('utf8'))
         return hlib.digest()
