@@ -13,16 +13,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.blockchain import BlockChain
-
-def main():
-    bc = BlockChain()
-    
-    bc.add_block("Send 1 BTC to Ivan")
-    bc.add_block("Send 2 more BTC to Ivan")
-    
-    for block in bc.blocks:
-        print ("Prev. hash:", block.prev_block_hash)
-        print ("Data:", block.data)
-        print ("Hash:", block.hash)
-        print ("")
+class ProofOfWork(object):
+	def __init__(self, block):
+		self.block = block
+		self.target = 1
+		
+	def prepare_data(self, nonce):
+		pass
+		
+	def run(self):
+		pass
+		
+		
