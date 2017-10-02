@@ -24,8 +24,8 @@ def dummy_pow():
 def num_to_bytes(num):
 	return bytes(array.array('f', [num]))
 
-def bytes_to_num (bts):
-	return struct.unpack("<L", bts)[0]
+#def bytes_to_num (bts):
+#	return struct.unpack("<L", bts)[0]
 
 class ProofOfWork(object):
 	def __init__(self, block):
@@ -49,13 +49,10 @@ class ProofOfWork(object):
 		print ("Mining the block containing {0}".format(self.block.data))
 		while nonce < sys.maxsize:
 			data = self.prepare_data(nonce)
-			print(data)
-			bhash = hashlib.sha256(data).digest()
-			print(bhash)
-
-			if bytes_to_num(bhash) < int(self.target):
+			bhash = hashlib.sha256(data).hexdigest()
+			if bhash[-1:] == "0":
 				break
 			else:
 				nonce += 1
 
-		return nonce, bhash
+		return nonce, bytearray.fromhex(bhash)

@@ -25,7 +25,7 @@ class Block(object):
         #self.hash = self.create_hash()
 
         pWork = ProofOfWork(self)
-        self.hash, self.nonce = pWork.run()
+        self.nonce, self.hash = pWork.run()
 
     """
     def create_hash(self):

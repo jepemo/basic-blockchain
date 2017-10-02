@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import binascii
 from bbchain.blockchain import BlockChain
 
 def main():
@@ -22,7 +23,7 @@ def main():
     bc.add_block("Send 2 more BTC to Ivan")
 
     for block in bc.blocks:
-        print ("Prev. hash:", block.prev_block_hash)
+        print ("Prev. hash:", binascii.hexlify(block.prev_block_hash))
         print ("Data:", block.data)
-        print ("Hash:", block.hash)
+        print ("Hash:", binascii.hexlify(block.hash))
         print ("")
