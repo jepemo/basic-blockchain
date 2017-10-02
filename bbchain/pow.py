@@ -24,9 +24,6 @@ def dummy_pow():
 def num_to_bytes(num):
 	return bytes(array.array('f', [num]))
 
-#def bytes_to_num (bts):
-#	return struct.unpack("<L", bts)[0]
-
 class ProofOfWork(object):
 	def __init__(self, block):
 		self.target_bits = 24
@@ -50,7 +47,7 @@ class ProofOfWork(object):
 		while nonce < sys.maxsize:
 			data = self.prepare_data(nonce)
 			bhash = hashlib.sha256(data).hexdigest()
-			if bhash[-1:] == "0":
+			if bhash[-4:] == "0000":
 				break
 			else:
 				nonce += 1

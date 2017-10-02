@@ -13,15 +13,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib
-import time
-from bbchain.pow import ProofOfWork
+import json
 
-class Block(object):
-    def __init__(self, data, prev_block_hash):
-        self.timestamp = time.time()
-        self.data = data
-        self.prev_block_hash = prev_block_hash
+class BasicStorage():
+    def __init__(self):
+        pass
 
-        pWork = ProofOfWork(self)
-        self.nonce, self.hash = pWork.run()
+    def save(self, block):
+        pass
