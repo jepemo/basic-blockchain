@@ -11,3 +11,4 @@ Basic cryptocurrency, based on blockchain, implemented in Python
   * [Part 4: Transactions 1](https://jeiwan.cc/posts/building-blockchain-in-go-part-4/)
   * [Part 5: Addresses](https://jeiwan.cc/posts/building-blockchain-in-go-part-5/)
   * [Part 6: Transactions 2](https://jeiwan.cc/posts/building-blockchain-in-go-part-6/)
+  * [Part 7: Network](https://jeiwan.cc/posts/building-blockchain-in-go-part-7/)
