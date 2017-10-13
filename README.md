@@ -2,7 +2,7 @@
 Basic cryptocurrency, based on blockchain, implemented in Python
 
 ## Inspired by
-
+* [Intro Blockchain Architecture](https://www.pluralsight.com/guides/software-engineering-best-practices/blockchain-architecture)
 * [Learn Blockchains by Building One](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46?gi=9fbd0628b089)
 * Building Blochain in go:
   * [Part 1: Basic Prototype](https://jeiwan.cc/posts/building-blockchain-in-go-part-1/)
