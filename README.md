@@ -13,3 +13,4 @@ Basic cryptocurrency, based on blockchain, implemented in Python
   * [Part 6: Transactions 2](https://jeiwan.cc/posts/building-blockchain-in-go-part-6/)
   * [Part 7: Network](https://jeiwan.cc/posts/building-blockchain-in-go-part-7/)
 * [An anonymous proof-of-work blockchain (Implemented in Ruby)](https://github.com/alexdovzhanyn/odyn)
+* [Paper review. Blockchains from a distributed computing perspective](http://muratbuffalo.blogspot.com.es/2018/02/blockchains-from-distributed-computing.html)
