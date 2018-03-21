@@ -13,11 +13,23 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
+import shelve
 
-class BasicStorage():
-    def __init__(self):
-        pass
+class DB:
+    def initialize(self):
+        raise Exception("Not Implemented")
+    def add_block(self, _block):
+        raise Exception("Not Implemented")
+    def get_block(self, _hash):
+        raise Exception("Not Implemented")
 
-    def save(self, block):
-        pass
+
+class ShelveDB(BD):
+    shelve = None
+    def __init__(self, _module):
+        self.shelve = _module	
+
+def create_db(engine="shelve"):
+    if engine == "shelve":
+        import shelve
+        return ShelveDB(shelve)

@@ -15,7 +15,7 @@
 
 import hashlib
 import time
-from bbchain.pow import ProofOfWork
+from bbchain.consensus.pow import ProofOfWork
 
 class Block(object):
     def __init__(self, data, prev_block_hash):

@@ -13,24 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import shelve
-
-class DB:
-	def initialize(self):
-		raise Exception("Not Implemented")
-	def add_block(self, _block):
-		raise Exception("Not Implemented")
-	def get_block(self, _hash):
-		raise Exception("Not Implemented")
-		
-		
-class ShelveDB(BD):
-	shelve = None
-	def __init__(self, _module):
-		self.shelve = _module	
-		
-def create_persistence(engine="shelve"):
-	if engine == "shelve":
-		import shelve
-		return ShelveDB(shelve)
-		
+class ProofOfStake:
+	def __init__(self):
+		pass

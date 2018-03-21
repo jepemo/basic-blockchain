@@ -13,11 +13,13 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import shelve
 from bbchain.block import Block	
+from bbchain.storage import create_db
 
 class BlockChain(object):
+	self.db = None
 	def __init__(self):
+		self.db = create_db()
 		self.blocks = []
 		self.blocks.append(self.create_genesis_block())
 		
