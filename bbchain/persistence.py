@@ -14,17 +14,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import shelve
-from bbchain.block import Block	
 
-class BlockChain(object):
-	def __init__(self):
-		self.blocks = []
-		self.blocks.append(self.create_genesis_block())
+class DB:
+	def initialize(self):
+		raise Exception("Not Implemented")
+	def add_block(self, _block):
+		raise Exception("Not Implemented")
+	def get_block(self, _hash):
+		raise Exception("Not Implemented")
 		
-	def add_block(self, data):
-		prev_block = self.blocks[len(self.blocks)-2]
-		new_block = Block(data, prev_block.hash)
-		self.blocks.append(new_block)
 		
-	def create_genesis_block(self):
-		return Block("Genesis Block", b'')
+class ShelveDB(BD):
+	shelve = None
+	def __init__(self, _module):
+		self.shelve = _module	
+		
+def create_persistence(engine="shelve"):
+	if engine == "shelve":
+		import shelve
+		return ShelveDB(shelve)
+		
