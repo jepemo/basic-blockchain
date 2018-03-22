@@ -17,7 +17,7 @@ import binascii
 from bbchain.blockchain import BlockChain
 
 def main():
-    bc = BlockChain()
+    bc = BlockChain.default()
 
     bc.add_block("Send 1 BTC to Ivan")
     bc.add_block("Send 2 more BTC to Ivan")
@@ -26,4 +26,5 @@ def main():
         print ("Prev. hash:", binascii.hexlify(block.prev_block_hash))
         print ("Data:", block.data)
         print ("Hash:", binascii.hexlify(block.hash))
+        print ("Consensus valid:", bc.is_block_valid(block))
         print ("")

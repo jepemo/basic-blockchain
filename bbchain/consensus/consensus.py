@@ -13,11 +13,21 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.consensus.consensus import SimpleConsensus
-from bbchain.consensus.pow import ProofOfWork
+from bbchain.utils import num_to_bytes
 
-def create_consensus(ctype="simple"):
-	if ctype == "simple":
-		return SimpleConsensus()
-	elif ctype == "pow":
-		return ProofOfWork()
+class Consensus(object):
+	def calculate_hash(self, block):
+		raise Exception("Not implemented")
+	def is_valid(self, block_hash):
+		raise Exception("Not implemented")
+		
+class SimpleConsensus(object):
+	def calculate_hash(self, block):
+		return b''.join ([
+			block.prev_block_hash,
+			bytes(block.data.encode("utf8")),
+			num_to_bytes(block.timestamp)
+		])
+	def is_valid(self, block_hash):
+		return True
+	

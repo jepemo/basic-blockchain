@@ -13,11 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.consensus.consensus import SimpleConsensus
-from bbchain.consensus.pow import ProofOfWork
+import array
 
-def create_consensus(ctype="simple"):
-	if ctype == "simple":
-		return SimpleConsensus()
-	elif ctype == "pow":
-		return ProofOfWork()
+def num_to_bytes(num):
+	return bytes(array.array('f', [num]))

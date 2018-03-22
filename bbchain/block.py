@@ -22,6 +22,4 @@ class Block(object):
         self.timestamp = time.time()
         self.data = data
         self.prev_block_hash = prev_block_hash
-
-        pWork = ProofOfWork(self)
-        self.nonce, self.hash = pWork.run()
+        self.hash = None

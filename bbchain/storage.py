@@ -15,7 +15,7 @@
 
 import shelve
 
-class DB:
+class DB(object):
     def initialize(self):
         raise Exception("Not Implemented")
     def add_block(self, _block):
@@ -24,7 +24,7 @@ class DB:
         raise Exception("Not Implemented")
 
 
-class ShelveDB(BD):
+class ShelveDB(DB):
     shelve = None
     def __init__(self, _module):
         self.shelve = _module	

@@ -17,39 +17,37 @@ import array
 import hashlib
 import struct
 import sys
+from bbchain.consensus.consensus import Consensus
+from bbchain.utils import num_to_bytes
 
-def dummy_pow():
-	pass
-
-def num_to_bytes(num):
-	return bytes(array.array('f', [num]))
-
-class ProofOfWork(object):
-	def __init__(self, block):
+class ProofOfWork(Consensus):
+	def __init__(self):
 		self.target_bits = 24
-		self.block = block
 		self.target = 1 << (256 - self.target_bits)
 
-	def prepare_data(self, nonce):
+	def _prepare_data(self, block, nonce):
 		return b''.join ([
-			self.block.prev_block_hash,
-			bytes(self.block.data.encode("utf8")),
-			num_to_bytes(self.block.timestamp),
+			block.prev_block_hash,
+			bytes(block.data.encode("utf8")),
+			num_to_bytes(block.timestamp),
 			num_to_bytes(self.target_bits),
 			num_to_bytes(nonce)
 		])
 
-	def run(self):
+	def calculate_hash(self, block):
 		nonce = 0
 		bhash = None
 
-		print ("Mining the block containing {0}".format(self.block.data))
+		print ("Mining the block containing {0}".format(block.data))
 		while nonce < sys.maxsize:
-			data = self.prepare_data(nonce)
+			data = self._prepare_data(block, nonce)
 			bhash = hashlib.sha256(data).hexdigest()
-			if bhash[-4:] == "0000":
+			if self.is_valid(bhash):
 				break
 			else:
 				nonce += 1
 
 		return nonce, bytearray.fromhex(bhash)
+		
+	def is_valid(self, block_hash):
+		return block_hash[-4:] == "0000"

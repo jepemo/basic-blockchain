@@ -15,18 +15,29 @@
 
 from bbchain.block import Block	
 from bbchain.storage import create_db
+from bbchain.consensus import create_consensus
 
 class BlockChain(object):
-	self.db = None
-	def __init__(self):
-		self.db = create_db()
+	def __init__(self, db, consensus):
+		self.db = db
+		self.consensus = consensus
 		self.blocks = []
 		self.blocks.append(self.create_genesis_block())
 		
 	def add_block(self, data):
 		prev_block = self.blocks[len(self.blocks)-2]
 		new_block = Block(data, prev_block.hash)
+		new_block.hash = self.consensus.calculate_hash(new_block) 
 		self.blocks.append(new_block)
 		
 	def create_genesis_block(self):
-		return Block("Genesis Block", b'')
+		new_block = Block("Genesis Block", b'')
+		new_block.hash = self.consensus.calculate_hash(new_block)
+		return new_block
+		
+	def is_block_valid(self, block):
+		return self.consensus.is_valid(block.hash)
+		
+	@staticmethod
+	def default():
+		return BlockChain(create_db(), create_consensus())
