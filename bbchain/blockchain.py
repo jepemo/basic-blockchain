@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import binascii
 from bbchain.block import Block	
 from bbchain.storage import create_db
 from bbchain.consensus import create_consensus
@@ -21,14 +22,19 @@ class BlockChain(object):
 	def __init__(self, db, consensus):
 		self.db = db
 		self.consensus = consensus
-		self.blocks = []
-		self.blocks.append(self.create_genesis_block())
+		
+		if not self.db.is_empty():
+			genesis = self.create_genesis_block()
+			self.db.add_block(genesis)
+			
+		self.last_hash = self.db.get_last_hash()		
 		
 	def add_block(self, data):
-		prev_block = self.blocks[len(self.blocks)-2]
-		new_block = Block(data, prev_block.hash)
+		new_block = Block(data, self.last_hash)
 		new_block.hash = self.consensus.calculate_hash(new_block) 
-		self.blocks.append(new_block)
+		self.db.add_block(new_block)
+		self.last_hash = self.db.get_last_hash()
+		assert new_block.hash == self.last_hash
 		
 	def create_genesis_block(self):
 		new_block = Block("Genesis Block", b'')
@@ -37,6 +43,20 @@ class BlockChain(object):
 		
 	def is_block_valid(self, block):
 		return self.consensus.is_valid(block.hash)
+	
+	def clean_db(self):
+		self.db.clean_db()
+		
+	def print(self):
+		pointer = self.last_hash
+		while pointer:
+			block = self.db.get_block(pointer)
+			print ("Prev. hash:", block.prev_block_hash)
+			print ("Data:", block.data)
+			print ("Hash:", block.hash)
+			print ("Consensus valid:", self.is_block_valid(block))
+			print ("")
+			pointer = block.prev_block_hash
 		
 	@staticmethod
 	def default():

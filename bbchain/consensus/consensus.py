@@ -13,6 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import hashlib
 from bbchain.utils import num_to_bytes
 
 class Consensus(object):
@@ -23,11 +24,13 @@ class Consensus(object):
 		
 class SimpleConsensus(object):
 	def calculate_hash(self, block):
-		return b''.join ([
-			block.prev_block_hash,
+		data = b''.join ([
+			bytes(block.prev_block_hash.encode("utf8")),
 			bytes(block.data.encode("utf8")),
 			num_to_bytes(block.timestamp)
 		])
+		return hashlib.sha256(data).hexdigest()
+		
 	def is_valid(self, block_hash):
 		return True
 	

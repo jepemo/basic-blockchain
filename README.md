@@ -1,6 +1,24 @@
 # basic-blockchain
 Basic cryptocurrency, based on blockchain, implemented in Python
 
+## Getting Started
+
+### Installation
+```
+pip install bbchain
+```
+
+## Development
+```bash
+git clone https://github.com/jepemo/basic-blockchain.git
+cd basic-blockchain
+python3 -m venv venv
+source venv/bin/activate
+pip install -e .
+
+bbchain --help
+```
+
 ## Inspired by
 * [Intro Blockchain Architecture](https://www.pluralsight.com/guides/software-engineering-best-practices/blockchain-architecture)
 * [Learn Blockchains by Building One](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46?gi=9fbd0628b089)

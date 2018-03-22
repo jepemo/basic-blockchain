@@ -13,9 +13,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import hashlib
 import time
-from bbchain.consensus.pow import ProofOfWork
 
 class Block(object):
     def __init__(self, data, prev_block_hash):

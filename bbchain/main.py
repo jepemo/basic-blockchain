@@ -13,18 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import binascii
+import argparse
+import sys
 from bbchain.blockchain import BlockChain
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--clean", help="Delete & clean all db files", action="store_true")
+    parser.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
+    parser.add_argument("--add", help="Adds data to the blockchain. Creating a new Block", type=str)
+    args = parser.parse_args()
+    
+    # print(args)
+    
     bc = BlockChain.default()
+    if args.clean:
+        bc.clean_db()
+        sys.exit(0)
+    elif args.print:
+        bc.print()
+    elif args.add:
+        bc.add_block(args.add)
+    else:
+        parser.print_help()
 
-    bc.add_block("Send 1 BTC to Ivan")
-    bc.add_block("Send 2 more BTC to Ivan")
-
-    for block in bc.blocks:
-        print ("Prev. hash:", binascii.hexlify(block.prev_block_hash))
-        print ("Data:", block.data)
-        print ("Hash:", binascii.hexlify(block.hash))
-        print ("Consensus valid:", bc.is_block_valid(block))
-        print ("")
