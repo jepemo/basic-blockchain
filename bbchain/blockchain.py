@@ -27,7 +27,10 @@ class BlockChain(object):
 			genesis = self.create_genesis_block()
 			self.db.add_block(genesis)
 			
-		self.last_hash = self.db.get_last_hash()		
+		self.last_hash = self.db.get_last_hash()	
+		
+	def add_data(self, data):
+		self.add_block(data)	
 		
 	def add_block(self, data):
 		new_block = Block(data, self.last_hash)

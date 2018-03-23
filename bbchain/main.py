@@ -19,12 +19,25 @@ from bbchain.blockchain import BlockChain
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--clean", help="Delete & clean all db files", action="store_true")
-    parser.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
-    parser.add_argument("--add", help="Adds data to the blockchain. Creating a new Block", type=str)
+    
+    general_grp = parser.add_argument_group("General Options")
+    general_grp.add_argument("--nodes", type=str, nargs='+', help='Master-Node host:port list')
+    
+    master_grp = parser.add_argument_group("Master node Options")
+    master_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")
+    master_grp.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
+    master_grp.add_argument("--start-master", help="Starts Node as a Master node", action="store_true")
+    
+    miner_grp = parser.add_argument_group("Miner node Options")
+    miner_grp.add_argument("--start-miner", help="Starts Node as a Miner (validator) node", 
+                           action="store_true")
+    
+    client_grp = parser.add_argument_group("Client Options")
+    client_grp.add_argument("--add", help="Adds data to the blockchain. Creating a new Block", type=str)
+    
     args = parser.parse_args()
     
-    # print(args)
+    # print(args); sys.exit(0)
     
     bc = BlockChain.default()
     if args.clean:
@@ -33,7 +46,7 @@ def main():
     elif args.print:
         bc.print()
     elif args.add:
-        bc.add_block(args.add)
+        bc.add_data(args.add)
     else:
         parser.print_help()
 
