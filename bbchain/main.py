@@ -22,6 +22,8 @@ def main():
     
     general_grp = parser.add_argument_group("General Options")
     general_grp.add_argument("--nodes", type=str, nargs='+', help='Master-Node host:port list')
+    general_grp.add_argument("--host", type=str, help="Node Hostname", default="localhost")
+    general_grp.add_argument("--port", type=int, help="Node Port", default="8000")
     
     master_grp = parser.add_argument_group("Master node Options")
     master_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")
@@ -47,6 +49,10 @@ def main():
         bc.print()
     elif args.add:
         bc.add_data(args.add)
+    elif args.start_master:
+        from bbchain.net.http_server import HttpServer
+        server = HttpServer(args.host, args.port, bc)
+        server.start_master()
     else:
         parser.print_help()
 
