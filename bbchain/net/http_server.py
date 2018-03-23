@@ -16,24 +16,38 @@
 import json
 import socketserver
 import sys
+import traceback
+from urllib.parse import urlparse
 from http.server import BaseHTTPRequestHandler
 from bbchain.net.network import Server
 
 class BaseHandler(BaseHTTPRequestHandler):
 	def __init__(self, request, client_address, server):
 		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
+		
+	def _init(self):
 		self.get_actions = {}
 		self.post_actions = {}
+		
+	def init_routes(self):
+		pass
 		
 	def _set_headers(self, code=200):
 		self.send_response(200)
 		self.send_header('Content-type', 'application/json')
 		self.end_headers()
 		
-	def do_GET(self):
+	def _do_request(self):	
+		self._init()
+		self.init_routes()
 		try:
-			action = "get_blocks"
+			url_parsed = urlparse(self.path)
+			action = url_parsed.path[1:]
+			print("Action:", action)
+			#action = "get_blocks"
 			handler = self.get_actions[action]
+			
+			body = self.rfile.read()
 			params = {}
 			
 			result = handler(params)
@@ -41,10 +55,17 @@ class BaseHandler(BaseHTTPRequestHandler):
 			self._set_headers()
 			self.wfile.write(json.dumps(result).encode('utf-8'))
 		except Exception as ex:
-			print("Error:", sys.exc_info()[0])
+			# print("Error:", sys.exc_info()[0])
+			traceback.print_exc()
 			error = { "error": str(ex) }
 			self._set_headers(code=400)
 			self.wfile.write(json.dumps(error).encode('utf-8'))
+		
+	def do_GET(self):
+		self._do_request()
+		
+	def do_POST(self):
+		self._do_request()
 		
 	def _add_get(self, action, handler):
 		self.get_actions[action] = handler
@@ -52,6 +73,8 @@ class BaseHandler(BaseHTTPRequestHandler):
 class MasterHandler(BaseHandler):
 	def __init__(self, request, client_address, server):
 		BaseHandler.__init__(self, request, client_address, server)
+
+	def init_routes(self):
 		self._add_get("get_blocks", self.get_blocks)
 		
 	def get_blocks(self, params):
