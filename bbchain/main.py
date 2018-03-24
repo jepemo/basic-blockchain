@@ -58,5 +58,11 @@ def main():
         server = HttpServerMiner(args.host, args.port, bc)
         server.start()
     else:
+        #addr = "http://" + args.host + ":" + str(args.port)
+        #print(addr)
+        #from bbchain.net.http_client import HttpClient
+        #t = HttpClient().get_node_type(addr)
+        #print(t)
         parser.print_help()
+        
 

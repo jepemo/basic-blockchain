@@ -1,2 +1,3 @@
 uvloop==0.8.1
 japronto
+requests

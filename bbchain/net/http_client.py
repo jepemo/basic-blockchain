@@ -13,8 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import requests
 from bbchain.net.network import Client
 
 class HttpClient(Client):
 	def __init__(self):
 		pass
+		
+	def get_node_type(self, addr):
+		r = requests.get(addr + "/get_node_type")
+		json_resp = r.json()
+		return json_resp["type"]
