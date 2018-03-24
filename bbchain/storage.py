@@ -39,7 +39,6 @@ class ShelveDB(DB):
         self.last_hash_key = "l"
               
     def _block_key(self, _hash):
-        #return "b" + str(binascii.hexlify(_hash))
         return "b" + _hash 
               
     def add_block(self, _block):

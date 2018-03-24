@@ -17,37 +17,53 @@ import sys
 from japronto import Application
 from bbchain.net.network import Server
 
-class HttpServer(Server):
+class HttpServerMiner(Server):
 	def __init__(self, host, port, bc):
-		self.bchain = bc
-		self.host = host
-		self.port = port
+		super().__init__(host, port, bc)
+		
+	def start_miner(self):
+		app = Application()
+		app.router.add_route('/add_data', self.add_data)
+		app.router.add_route('/', self.help_miner)
+		app.run(debug=True, host=self.host, port=self.port)
 	
-	def help_master(self, request):
-		return request.Response(json={
-			"help": [
-				"get_blocks",
-			]
-		})
 	def help_miner(self, request):
 		return request.Response(json={
 			"help": []	
 		})
-			
-	def get_blocks(self, request):
-		count = request.query['count'] if 'count' in request.query else 10
-		pointer = request.query['from_hash'] if 'from_hash' in request.query else self.bc.last_hash
 		
-		#print(request.query)
-		return request.Response(json={ 'text': 'Hello world!'})	
+	def add_data(self, request):
+		return request.Response(json={"Status": "OK"})
+			
+	
+class HttpServerMaster(Server):
+	def __init__(self, host, port, bc):
+		super().__init__(host, port, bc)
 		
 	def start_master(self):
 		app = Application()
 		app.router.add_route('/get_blocks', self.get_blocks)
 		app.router.add_route('/', self.help_master)
 		app.run(debug=True, host=self.host, port=self.port)
+
+	def help_master(self, request):
+		return request.Response(json={
+			"help": [
+				"get_blocks",
+			]
+		})
 			
-	def start_miner(self):
-		app = Application()
-		app.router.add_route('/', self.help_miner)
-		app.run(debug=True, host=self.host, port=self.port)
+	def get_blocks(self, request):
+		count = int(request.query['count']) if 'count' in request.query else 10
+		pointer = request.query['from_hash'] if 'from_hash' in request.query else self.bchain.last_hash
+		
+		chain = []
+		
+		while pointer and count > 0:
+			block = self.bchain.db.get_block(pointer)
+			chain.append(block.to_dict())
+			pointer = block.prev_block_hash
+			count -= 1
+
+		return request.Response(json={ 'chain': chain})	
+		

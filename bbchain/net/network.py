@@ -18,5 +18,7 @@ class Client:
 		pass
 		
 class Server:
-	def __init__(self):
-		pass
+	def __init__(self, host, port, bc):
+		self.bchain = bc
+		self.host = host
+		self.port = port

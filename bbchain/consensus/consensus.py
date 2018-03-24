@@ -25,9 +25,9 @@ class Consensus(object):
 class SimpleConsensus(object):
 	def calculate_hash(self, block):
 		data = b''.join ([
-			block.prev_block_hash,
+			bytes(block.prev_block_hash.encode("utf8")),
 			bytes(block.data.encode("utf8")),
-			num_to_bytes(block.timestamp)
+			num_to_bytes(float(block.timestamp))
 		])
 		return hashlib.sha256(data).hexdigest()
 		

@@ -40,7 +40,7 @@ class BlockChain(object):
 		assert new_block.hash == self.last_hash
 		
 	def create_genesis_block(self):
-		new_block = Block("Genesis Block", b'')
+		new_block = Block("Genesis Block", "")
 		new_block.hash = self.consensus.calculate_hash(new_block)
 		return new_block
 		

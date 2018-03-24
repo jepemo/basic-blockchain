@@ -21,3 +21,21 @@ class Block(object):
         self.data = data
         self.prev_block_hash = prev_block_hash
         self.hash = None
+        
+    def to_dict(self):
+        return {
+            "hash": self.hash,
+            "prev_block_hash": self.prev_block_hash, #.decode("utf-8"),
+            "timestamp": self.timestamp,
+            "data": self.data
+        }
+     
+    @staticmethod    
+    def from_dict(self, d):
+        block = Block(
+            d["data"],
+            d["prev_block_hash"]
+        )
+        block.timestamp = float(d["timestamp"])
+        block.hash = d["hash"]
+        return block

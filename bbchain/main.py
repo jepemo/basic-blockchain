@@ -50,8 +50,12 @@ def main():
     elif args.add:
         bc.add_data(args.add)
     elif args.start_master:
-        from bbchain.net.http_server import HttpServer
-        server = HttpServer(args.host, args.port, bc)
+        from bbchain.net.http_server import HttpServerMaster
+        server = HttpServerMaster(args.host, args.port, bc)
+        server.start_master()
+    elif args.start_miner:
+        from bbchain.net.http_server import HttpServerMiner
+        server = HttpServerMiner(args.host, args.port, bc)
         server.start_master()
     else:
         parser.print_help()
