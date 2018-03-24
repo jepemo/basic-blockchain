@@ -52,11 +52,11 @@ def main():
     elif args.start_master:
         from bbchain.net.http_server import HttpServerMaster
         server = HttpServerMaster(args.host, args.port, bc)
-        server.start_master()
+        server.start()
     elif args.start_miner:
         from bbchain.net.http_server import HttpServerMiner
         server = HttpServerMiner(args.host, args.port, bc)
-        server.start_master()
+        server.start()
     else:
         parser.print_help()
 

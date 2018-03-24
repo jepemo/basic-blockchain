@@ -22,3 +22,6 @@ class Server:
 		self.bchain = bc
 		self.host = host
 		self.port = port
+		
+	def start():
+		raise Exception("Not implemented exception")

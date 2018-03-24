@@ -21,11 +21,15 @@ class HttpServerMiner(Server):
 	def __init__(self, host, port, bc):
 		super().__init__(host, port, bc)
 		
-	def start_miner(self):
+	def start(self):
 		app = Application()
+		app.router.add_route('/get_node_type', self.get_node_type)
 		app.router.add_route('/add_data', self.add_data)
 		app.router.add_route('/', self.help_miner)
 		app.run(debug=True, host=self.host, port=self.port)
+		
+	def get_node_type(self, request):
+		return request.Response(json={'type': "MINER"})
 	
 	def help_miner(self, request):
 		return request.Response(json={
@@ -34,17 +38,20 @@ class HttpServerMiner(Server):
 		
 	def add_data(self, request):
 		return request.Response(json={"Status": "OK"})
-			
 	
 class HttpServerMaster(Server):
 	def __init__(self, host, port, bc):
 		super().__init__(host, port, bc)
 		
-	def start_master(self):
+	def start(self):
 		app = Application()
+		app.router.add_route('/get_node_type', self.get_node_type)
 		app.router.add_route('/get_blocks', self.get_blocks)
 		app.router.add_route('/', self.help_master)
 		app.run(debug=True, host=self.host, port=self.port)
+		
+	def get_node_type(self, request):
+		return request.Response(json={'type': "MASTER"})
 
 	def help_master(self, request):
 		return request.Response(json={
