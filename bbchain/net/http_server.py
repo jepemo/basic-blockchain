@@ -13,95 +13,41 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import json
-import socketserver
 import sys
-import traceback
-from urllib.parse import urlparse
-from http.server import BaseHTTPRequestHandler
+from japronto import Application
 from bbchain.net.network import Server
-
-class BaseHandler(BaseHTTPRequestHandler):
-	def __init__(self, request, client_address, server):
-		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
-		
-	def _init(self):
-		self.get_actions = {}
-		self.post_actions = {}
-		
-	def init_routes(self):
-		pass
-		
-	def _set_headers(self, code=200):
-		self.send_response(200)
-		self.send_header('Content-type', 'application/json')
-		self.end_headers()
-		
-	def _do_request(self):	
-		self._init()
-		self.init_routes()
-		try:
-			url_parsed = urlparse(self.path)
-			action = url_parsed.path[1:]
-			print("Action:", action)
-			#action = "get_blocks"
-			handler = self.get_actions[action]
-			
-			body = self.rfile.read()
-			params = {}
-			
-			result = handler(params)
-			
-			self._set_headers()
-			self.wfile.write(json.dumps(result).encode('utf-8'))
-		except Exception as ex:
-			# print("Error:", sys.exc_info()[0])
-			traceback.print_exc()
-			error = { "error": str(ex) }
-			self._set_headers(code=400)
-			self.wfile.write(json.dumps(error).encode('utf-8'))
-		
-	def do_GET(self):
-		self._do_request()
-		
-	def do_POST(self):
-		self._do_request()
-		
-	def _add_get(self, action, handler):
-		self.get_actions[action] = handler
-
-class MasterHandler(BaseHandler):
-	def __init__(self, request, client_address, server):
-		BaseHandler.__init__(self, request, client_address, server)
-
-	def init_routes(self):
-		self._add_get("get_blocks", self.get_blocks)
-		
-	def get_blocks(self, params):
-		return {}
-		
-class MinerHandler(BaseHandler):
-	def __init__(self, request, client_address, server):
-		BaseHTTPRequestHandler.__init__(self, request, client_address, server)
-	
 
 class HttpServer(Server):
 	def __init__(self, host, port, bc):
 		self.bchain = bc
 		self.host = host
 		self.port = port
+	
+	def help_master(self, request):
+		return request.Response(json={
+			"help": [
+				"get_blocks",
+			]
+		})
+	def help_miner(self, request):
+		return request.Response(json={
+			"help": []	
+		})
+			
+	def get_blocks(self, request):
+		count = request.query['count'] if 'count' in request.query else 10
+		pointer = request.query['from_hash'] if 'from_hash' in request.query else self.bc.last_hash
 		
-	def _start_server(self, handler):
-		with socketserver.TCPServer((self.host, self.port), handler) as httpd:
-			print("Serving at port", self.port)
-			httpd.serve_forever()	
+		#print(request.query)
+		return request.Response(json={ 'text': 'Hello world!'})	
 		
 	def start_master(self):
-		#handler = http.server.SimpleHTTPRequestHandler
-		handler = MasterHandler
-		self._start_server(handler)
-		
-		
+		app = Application()
+		app.router.add_route('/get_blocks', self.get_blocks)
+		app.router.add_route('/', self.help_master)
+		app.run(debug=True, host=self.host, port=self.port)
 			
 	def start_miner(self):
-		pass
+		app = Application()
+		app.router.add_route('/', self.help_miner)
+		app.run(debug=True, host=self.host, port=self.port)
