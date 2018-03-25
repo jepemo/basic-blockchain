@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -19,28 +19,28 @@ from bbchain.blockchain import BlockChain
 
 def main():
     parser = argparse.ArgumentParser()
-    
+
     general_grp = parser.add_argument_group("General Options")
     general_grp.add_argument("--nodes", type=str, nargs='+', help='Master-Node host:port list')
     general_grp.add_argument("--host", type=str, help="Node Hostname", default="localhost")
     general_grp.add_argument("--port", type=int, help="Node Port", default="8000")
-    
+
     master_grp = parser.add_argument_group("Master node Options")
     master_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")
     master_grp.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
     master_grp.add_argument("--start-master", help="Starts Node as a Master node", action="store_true")
-    
+
     miner_grp = parser.add_argument_group("Miner node Options")
-    miner_grp.add_argument("--start-miner", help="Starts Node as a Miner (validator) node", 
+    miner_grp.add_argument("--start-miner", help="Starts Node as a Miner (validator) node",
                            action="store_true")
-    
+
     client_grp = parser.add_argument_group("Client Options")
     client_grp.add_argument("--add", help="Adds data to the blockchain. Creating a new Block", type=str)
-    
+
     args = parser.parse_args()
-    
+
     # print(args); sys.exit(0)
-    
+
     bc = BlockChain.default()
     if args.clean:
         bc.clean_db()
@@ -64,5 +64,3 @@ def main():
         #t = HttpClient().get_node_type(addr)
         #print(t)
         parser.print_help()
-        
-

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -16,12 +16,12 @@
 class Client:
 	def __init__(self):
 		pass
-		
+
 class Server:
 	def __init__(self, host, port, bc):
 		self.bchain = bc
 		self.host = host
 		self.port = port
-		
+
 	def start():
 		raise Exception("Not implemented exception")

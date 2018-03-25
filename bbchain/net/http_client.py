@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -19,7 +19,7 @@ from bbchain.net.network import Client
 class HttpClient(Client):
 	def __init__(self):
 		pass
-		
+
 	def get_node_type(self, addr):
 		r = requests.get(addr + "/get_node_type")
 		json_resp = r.json()

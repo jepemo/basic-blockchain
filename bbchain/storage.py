@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -37,41 +37,41 @@ class ShelveDB(DB):
         self.blocks_path = os.path.join(_dbpath, "blocks")
         self.chainstate_path = os.path.join(_dbpath, "chainstate")
         self.last_hash_key = "l"
-              
+
     def _block_key(self, _hash):
-        return "b" + _hash 
-              
+        return "b" + _hash
+
     def add_block(self, _block):
         key = self._block_key(_block.hash)
         with self.shelve.open(self.blocks_path) as db:
             db[key] = _block
             db[self.last_hash_key] = _block.hash
-            
+
     def get_block(self, _hash):
         block = None
         key = self._block_key(_hash)
         with self.shelve.open(self.blocks_path) as db:
             block = db[key]
         return block
-    
+
     def clean_db(self):
         if os.path.exists(self.blocks_path):
             os.remove(self.blocks_path)
         if os.path.exists(self.chainstate_path):
             os.remove(self.chainstate_path)
-        
+
     def get_last_hash(self):
         last_hash = None
         with self.shelve.open(self.blocks_path) as db:
             last_hash = db[self.last_hash_key]
         return last_hash
-    
+
     def is_empty(self):
         empty = True
         with self.shelve.open(self.blocks_path) as db:
             empty = self.last_hash_key in db
         return empty
-        
+
 
 def create_db(engine="shelve", dbpath=tempfile.gettempdir()):
     if engine == "shelve":

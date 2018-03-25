@@ -31,7 +31,7 @@ setup(
     # https://packaging.python.org/en/latest/single_source_version.html
     version='1.0',
 
-    description='Basic cryptocurrency, based on blockchain, implemented in Python',
+    description='Simple extendable Blockchain implemented in Python',
     long_description=long_description,
 
     # The project's main homepage.

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ class Consensus(object):
 		raise Exception("Not implemented")
 	def is_valid(self, block_hash):
 		raise Exception("Not implemented")
-		
+
 class SimpleConsensus(object):
 	def calculate_hash(self, block):
 		data = b''.join ([
@@ -30,7 +30,6 @@ class SimpleConsensus(object):
 			num_to_bytes(float(block.timestamp))
 		])
 		return hashlib.sha256(data).hexdigest()
-		
+
 	def is_valid(self, block_hash):
 		return True
-	

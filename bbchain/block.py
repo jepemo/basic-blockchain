@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@ class Block(object):
         self.data = data
         self.prev_block_hash = prev_block_hash
         self.hash = None
-        
+
     def to_dict(self):
         return {
             "hash": self.hash,
@@ -29,8 +29,8 @@ class Block(object):
             "timestamp": self.timestamp,
             "data": self.data
         }
-     
-    @staticmethod    
+
+    @staticmethod
     def from_dict(self, d):
         block = Block(
             d["data"],

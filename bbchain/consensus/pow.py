@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -47,6 +47,6 @@ class ProofOfWork(Consensus):
 				nonce += 1
 
 		return nonce, bytearray.fromhex(bhash)
-		
+
 	def is_valid(self, block_hash):
 		return block_hash[-4:] == "0000"

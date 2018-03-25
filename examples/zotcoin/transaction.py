@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# bbchain - Basic cryptocurrency, based on blockchain, implemented in Python
+# bbchain - Simple extendable Blockchain implemented in Python
 #
 # Copyright (C) 2017-present Jeremies Pérez Morata
 # This program is free software: you can redistribute it and/or modify
@@ -17,22 +17,22 @@ class Transaction(object):
 	def __init__(self, to, data):
 		self.tx_inputs = []
 		self.tx_outputs = []
-		
+
 		if data == "":
 			data = "Reward to '{0}'".format(to)
-		
+
 		txin := TXInput{[]byte{}, -1, data}
 		txout := TXOutput{subsidy, to}
 		tx := Transaction{nil, []TXInput{txin}, []TXOutput{txout}}
 		tx.SetID()
-		
-		
+
+
 class TxOutput(object):
 	def __init__(self):
 		self.value = None
 		self.script_pub_key = None
-		
-		
+
+
 class TxInput(object):
 	def __init__(self):
 		self.tx_id = None
