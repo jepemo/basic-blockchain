@@ -55,19 +55,12 @@ def main():
     elif args.add:
         bc.add_data(args.add)
     elif args.start_master:
-        from bbchain.net.http_client import HttpClient
-        from bbchain.net.http_server import HttpServerMaster
-        server = HttpServerMaster(args.host, args.port, bc, args.nodes, HttpClient())
+        from bbchain.settings import Master
+        server = Master(args.host, args.port, bc, args.nodes)
         server.start()
     elif args.start_miner:
-        from bbchain.net.http_client import HttpClient
-        from bbchain.net.http_server import HttpServerMiner
-        server = HttpServerMiner(args.host, args.port, bc, args.nodes, HttpClient())
+        from bbchain.settings import Miner
+        server = Miner(args.host, args.port, bc, args.nodes)
         server.start()
     else:
-        #addr = "http://" + args.host + ":" + str(args.port)
-        #print(addr)
-        #from bbchain.net.http_client import HttpClient
-        #t = HttpClient().get_node_type(addr)
-        #print(t)
         parser.print_help()

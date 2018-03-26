@@ -13,8 +13,16 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.consensus.consensus import Consensus
+import coloredlogs, logging
 
-class ProofOfStake(Consensus):
-	def __init__(self):
-		pass
+logger = logging.getLogger(__name__)
+coloredlogs.install(level='DEBUG')
+
+from bbchain.net.http.client import HttpClient
+client = HttpClient()
+
+from bbchain.net.http.master import HttpServerMaster
+Master = HttpServerMaster
+
+from bbchain.net.http.miner import HttpServerMiner
+Miner = HttpServerMiner

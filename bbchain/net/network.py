@@ -13,9 +13,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import queue
+import threading
+
+
 class Client:
 	def __init__(self):
 		pass
+
 
 class Server:
 	def __init__(self, host, port, bc, nodes, client):
@@ -30,7 +35,7 @@ class Server:
 		# print(self.masters, self.miners)
 
 	def start():
-		raise Exception("Not implemented exception")
+		raise Exception("Not implemented")
 
 	def _init_nodes(self, nodes):
 		for node in nodes:
@@ -41,3 +46,36 @@ class Server:
 				self.miners.append(node)
 			else:
 				print("Unknown node:", node, "with type", ntype)
+
+class SenderReceiver(object):
+	def __init__(self):
+		self.commands = queue.Queue()
+
+	def get_command(self):
+		(sender, msg, *args) = self.commands.get()
+		self.commands.task_done()
+		#print("---------------")
+		#print("SENDER:", sender)
+		#print("MESSAGE:", msg)
+		#print("ARGS:", args)
+		return sender, msg, args
+
+	def command_exists(self):
+		return self.commands.empty()
+
+	def send_command(self, process, command, *args):
+		if not args:
+			args = []
+
+		parts = (self, command, *args)
+		#print("SENDING:", parts, "to", process)
+		process.commands.put(parts)
+
+class BBProcess(threading.Thread, SenderReceiver):
+	def __init__(self, name):
+		threading.Thread.__init__(self)
+		SenderReceiver.__init__(self)
+		self.threadID = name
+
+	def run(self):
+		raise Exception ("Not implemented")
