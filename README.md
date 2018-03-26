@@ -19,6 +19,11 @@ pip install -e .
 bbchain --help
 ```
 
+Execute tests:
+```
+  python setup.py test
+```
+
 ## Inspired by
 * [Intro Blockchain Architecture](https://www.pluralsight.com/guides/software-engineering-best-practices/blockchain-architecture)
 * [Learn Blockchains by Building One](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46?gi=9fbd0628b089)

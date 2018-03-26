@@ -68,7 +68,7 @@ class SenderReceiver(object):
 			args = []
 
 		parts = (self, command, *args)
-		#print("SENDING:", parts, "to", process)
+		print("SENDING:", parts, "to", process)
 		process.commands.put(parts)
 
 class BBProcess(threading.Thread, SenderReceiver):
