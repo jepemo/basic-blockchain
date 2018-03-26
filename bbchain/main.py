@@ -17,6 +17,9 @@ import argparse
 import sys
 from bbchain.blockchain import BlockChain
 
+def create_node_id(args):
+    return "{0}".format(args.port)
+
 def main():
     parser = argparse.ArgumentParser()
 
@@ -41,7 +44,9 @@ def main():
 
     # print(args); sys.exit(0)
 
-    bc = BlockChain.default()
+    node_id = create_node_id(args)
+
+    bc = BlockChain.default(node_id)
     if args.clean:
         bc.clean_db()
         sys.exit(0)
@@ -50,12 +55,14 @@ def main():
     elif args.add:
         bc.add_data(args.add)
     elif args.start_master:
+        from bbchain.net.http_client import HttpClient
         from bbchain.net.http_server import HttpServerMaster
-        server = HttpServerMaster(args.host, args.port, bc)
+        server = HttpServerMaster(args.host, args.port, bc, args.nodes, HttpClient())
         server.start()
     elif args.start_miner:
+        from bbchain.net.http_client import HttpClient
         from bbchain.net.http_server import HttpServerMiner
-        server = HttpServerMiner(args.host, args.port, bc)
+        server = HttpServerMiner(args.host, args.port, bc, args.nodes, HttpClient())
         server.start()
     else:
         #addr = "http://" + args.host + ":" + str(args.port)

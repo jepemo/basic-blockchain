@@ -32,10 +32,10 @@ class DB(object):
 
 class ShelveDB(DB):
     shelve = None
-    def __init__(self, _module, _dbpath):
+    def __init__(self, _node_id, _module, _dbpath):
         self.shelve = _module
-        self.blocks_path = os.path.join(_dbpath, "blocks")
-        self.chainstate_path = os.path.join(_dbpath, "chainstate")
+        self.blocks_path = os.path.join(_dbpath, "blocks_" + _node_id)
+        self.chainstate_path = os.path.join(_dbpath, "chainstate_" + _node_id)
         self.last_hash_key = "l"
 
     def _block_key(self, _hash):
@@ -73,7 +73,7 @@ class ShelveDB(DB):
         return empty
 
 
-def create_db(engine="shelve", dbpath=tempfile.gettempdir()):
+def create_db(node_id, engine="shelve", dbpath=tempfile.gettempdir()):
     if engine == "shelve":
         import shelve
-        return ShelveDB(shelve, dbpath)
+        return ShelveDB(node_id, shelve, dbpath)

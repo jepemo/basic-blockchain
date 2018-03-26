@@ -18,8 +18,8 @@ from japronto import Application
 from bbchain.net.network import Server
 
 class HttpServerMiner(Server):
-	def __init__(self, host, port, bc):
-		super().__init__(host, port, bc)
+	def __init__(self, host, port, bc, nodes, client):
+		super().__init__(host, port, bc, ["http://" + c for c in nodes] if nodes else [], client)
 
 	def start(self):
 		app = Application()
@@ -40,8 +40,8 @@ class HttpServerMiner(Server):
 		return request.Response(json={"Status": "OK"})
 
 class HttpServerMaster(Server):
-	def __init__(self, host, port, bc):
-		super().__init__(host, port, bc)
+	def __init__(self, host, port, bc, nodes, client):
+		super().__init__(host, port, bc, ["http://" + c for c in nodes] if nodes else [], client)
 
 	def start(self):
 		app = Application()

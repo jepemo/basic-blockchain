@@ -57,10 +57,10 @@ class BlockChain(object):
 			print ("Prev. hash:", block.prev_block_hash)
 			print ("Data:", block.data)
 			print ("Hash:", block.hash)
-			print ("Consensus valid:", self.is_block_valid(block))
+			print ("Valid:", self.is_block_valid(block))
 			print ("")
 			pointer = block.prev_block_hash
 
 	@staticmethod
-	def default():
-		return BlockChain(create_db(), create_consensus())
+	def default(node_id):
+		return BlockChain(create_db(node_id), create_consensus())

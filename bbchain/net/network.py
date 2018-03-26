@@ -18,10 +18,26 @@ class Client:
 		pass
 
 class Server:
-	def __init__(self, host, port, bc):
+	def __init__(self, host, port, bc, nodes, client):
 		self.bchain = bc
 		self.host = host
 		self.port = port
+		self.client = client
+		self.masters = []
+		self.miners = []
+
+		self._init_nodes(nodes)
+		# print(self.masters, self.miners)
 
 	def start():
 		raise Exception("Not implemented exception")
+
+	def _init_nodes(self, nodes):
+		for node in nodes:
+			ntype = self.client.get_node_type(node)
+			if ntype == "MASTER":
+				self.masters.append(node)
+			elif ntype == "MINER":
+				self.miners.append(node)
+			else:
+				print("Unknown node:", node, "with type", ntype)
