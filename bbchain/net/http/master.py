@@ -42,7 +42,7 @@ class HttpServerMaster(SenderReceiver):
                               self.bchain_worker)
         api.start()
 
-        logger.info("Exitting API Process")
+        logger.info("Exitting API Master Process")
 
         self.send_command(self.bchain_worker, "EXIT")
         self.send_command(self.sync_worker, "EXIT")

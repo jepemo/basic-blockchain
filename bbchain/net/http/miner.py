@@ -13,33 +13,36 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import sys
-from aiohttp import web
-from bbchain.net.network import Server, BBProcess, SenderReceiver
+from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
+from bbchain.net.http.worker_api_miner import WorkerApiMiner
+from bbchain.net.http.worker_bchain import WorkerBlockchain
+from bbchain.net.http.worker_sync import WorkerSync
 
-class HttpServerMiner(Server, SenderReceiver):
+
+class HttpServerMiner(SenderReceiver):
 	def __init__(self, host, port, bc, nodes):
-		super().__init__(host, port, bc, [], None)
 		SenderReceiver.__init__(self)
+		self.port = port
+		self.host = host
 		self.nodes = nodes
-
-	async def help_miner(self, request):
-		help = {
-			"help": []
-		}
-		return web.json_response(help)
-
-	def get_node_type(self, request):
-		return web.json_response({'type': "MINER"})
-
-	async def add_data(self, request):
-		return web.json_response({})
+		self.bchain = bc
 
 	def start(self):
-		app = web.Application()
-		app.add_routes([web.post('/add_data', self.add_data),
-						web.get('/get_node_type', self.get_node_type),
-						web.get('/', self.help_miner)])
+		self.bchain_worker = WorkerBlockchain(self.bchain)
+		self.bchain_worker.start()
 
-		web.run_app(app, host=self.host, port=self.port)
+		hosts = ["http://" + c for c in self.nodes] if self.nodes else []
+		self.sync_worker = WorkerSync(self.bchain_worker, hosts)
+		self.sync_worker.start()
+
+		api = WorkerApiMiner(self.host, self.port, self.sync_worker,
+						     self.bchain_worker)
+		api.start()
+
+		logger.info("Exitting API Miner Process")
+
+		self.send_command(self.bchain_worker, "EXIT")
+		self.send_command(self.sync_worker, "EXIT")
+		self.bchain_worker.join()
+		self.sync_worker.join()
