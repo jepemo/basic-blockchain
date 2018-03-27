@@ -17,7 +17,7 @@ import queue
 import sys
 import threading
 import time
-from japronto import Application
+from aiohttp import web
 from bbchain.net.network import Server, BBProcess, SenderReceiver
 from bbchain.settings import logger, client
 
@@ -57,15 +57,15 @@ class BlockchainThread(BBProcess):
 
         logger.info("bbchain thread waiting commands...")
         while True:
-            time.sleep(1)
-            print("Empty?", not self.command_exists())
             if self.command_exists():
-                sender, command, *args = self.get_command()
-
+                sender, command, args = self.get_command()
+                logger.debug("Processing: {0}({1})".format(command, args))
                 if command == "EXIT":
                     logger.info("Exitting BlockChain Process")
                     break
                 elif command == "GET_BLOCKS":
+                    count = args[0]
+                    pointer = args[1] if args[1] else self.bchain.last_hash
                     chain = []
                     while pointer and count > 0:
                         block = self.bchain.db.get_block(pointer)
@@ -102,45 +102,51 @@ class HttpServerMaster(Server, SenderReceiver):
         SenderReceiver.__init__(self)
         self.nodes = nodes
 
-    def help_master(self, request):
-        return request.Response(json={
+    async def help_master(self, request):
+        help = {
             "help": [
                 "get_blocks",
             ]
-        })
+        }
+        """
+        return request.Response(json=help)
+        """
+        return web.json_response(help)
 
-    def connect(self, request):
-        info = request.json
+    async def connect(self, request):
+        info = await request.json()
         node_host = info['host']
         node_type = info['type']
         self.send_command(self.bchain_thread, "ADD_NODE", node_host, node_type)
-        return request.Response(json={'result': "OK"})
+        return web.json_response({'result': "OK"})
 
-    def get_node_type(self, request):
-        return request.Response(json={'type': "MASTER"})
+    async def get_node_type(self, request):
+        return web.json_response({'type': "MASTER"})
 
-    def get_nodes(self, request):
+    async def get_nodes(self, request):
         self.send_command(self.bchain_thread, "NODES")
         sender, result, *args = self.get_command()
-        request.Response(json=result)
+        return web.json_response(result)
 
-    def get_blocks(self, request):
-        count = int(request.query['count']) if 'count' in request.query else 10
-        pointer = request.query['from_hash'] if 'from_hash' in request.query else self.bchain.last_hash
+    async def get_blocks(self, request):
+        q = request.rel_url.query
+        count = int(q['count']) if 'count' in q else 10
+        pointer = q['from_hash'] if 'from_hash' in q else None
 
         self.send_command(self.bchain_thread, "GET_BLOCKS", count, pointer)
         sender, result, *args = self.get_command()
 
-        return request.Response(json={ 'chain': result})
+        return web.json_response({ 'chain': result})
 
     def start_api(self):
-        app = Application()
-        app.router.add_route("/connect", self.connect)
-        app.router.add_route("/get_nodes", self.get_nodes)
-        app.router.add_route('/get_node_type', self.get_node_type)
-        app.router.add_route('/get_blocks', self.get_blocks)
-        app.router.add_route('/', self.help_master)
-        app.run(debug=True, host=self.host, port=self.port)
+        app = web.Application()
+        app.add_routes([web.post('/connect', self.connect),
+                        web.get('/get_nodes', self.get_nodes),
+                        web.get('/get_node_type', self.get_node_type),
+                        web.get('/get_blocks', self.get_blocks),
+                        web.get('/', self.help_master)])
+
+        web.run_app(app, host=self.host, port=self.port)
 
     def start(self):
         hosts = ["http://" + c for c in self.nodes] if self.nodes else []

@@ -68,9 +68,9 @@ class SenderReceiver(object):
 			args = []
 
 		parts = (self, command, *args)
-		print("SENDING:", parts, "to", process)
+		#print("SENDING:", parts, "to", process)
 		process.commands.put(parts)
-		print("QUEUE of ", process, "empty?", process.commands.empty())
+		#print("QUEUE of ", process, "empty?", process.commands.empty())
 
 class BBProcess(threading.Thread, SenderReceiver):
 	def __init__(self, name):
