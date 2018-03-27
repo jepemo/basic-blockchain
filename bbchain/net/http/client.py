@@ -29,3 +29,11 @@ class HttpClient(Client):
 		r = requests.get(addr + "/get_nodes")
 		json_resp = r.json()
 		return json_resp["masters"], json_resp["miners"]
+
+	def connect(self, addr, node_addr, node_type):
+		r = requests.post(addr + "/connect", data={
+			'host': node_addr,
+			'type': node_type
+		})
+		json_resp = r.json()
+		return json_resp["result"] == "OK"
