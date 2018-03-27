@@ -61,7 +61,7 @@ class SenderReceiver(object):
 		return sender, msg, args
 
 	def command_exists(self):
-		return self.commands.empty()
+		return not self.commands.empty()
 
 	def send_command(self, process, command, *args):
 		if not args:
@@ -70,6 +70,7 @@ class SenderReceiver(object):
 		parts = (self, command, *args)
 		print("SENDING:", parts, "to", process)
 		process.commands.put(parts)
+		print("QUEUE of ", process, "empty?", process.commands.empty())
 
 class BBProcess(threading.Thread, SenderReceiver):
 	def __init__(self, name):

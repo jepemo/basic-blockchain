@@ -27,6 +27,7 @@ def main():
     general_grp.add_argument("--nodes", type=str, nargs='+', help='Master-Node host:port list')
     general_grp.add_argument("--host", type=str, help="Node Hostname", default="localhost")
     general_grp.add_argument("--port", type=int, help="Node Port", default="8000")
+    general_grp.add_argument("--verbose", help="Verbose mode", action="store_true")
 
     master_grp = parser.add_argument_group("Master node Options")
     master_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")

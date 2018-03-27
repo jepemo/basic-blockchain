@@ -24,3 +24,8 @@ class HttpClient(Client):
 		r = requests.get(addr + "/get_node_type")
 		json_resp = r.json()
 		return json_resp["type"]
+
+	def get_nodes(self, addr):
+		r = requests.get(addr + "/get_nodes")
+		json_resp = r.json()
+		return json_resp["masters"], json_resp["miners"]

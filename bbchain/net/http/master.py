@@ -22,36 +22,15 @@ from bbchain.net.network import Server, BBProcess, SenderReceiver
 from bbchain.settings import logger, client
 
 class BlockchainThread(BBProcess):
-    def __init__(self, bc):
+    MAX_TIME_SYNC_NODES = 100
+
+    def __init__(self, bc, nodes):
         super().__init__("Blockchain")
         self.bchain = bc
-
-    def run(self):
-        while True:
-            sender, command, *args = self.get_command()
-            if command == "EXIT":
-                logger.info("Exitting BlockChain Process")
-                break
-            elif command == "GET_BLOCKS":
-                chain = []
-                while pointer and count > 0:
-                    block = self.bchain.db.get_block(pointer)
-                    chain.append(block.to_dict())
-                    pointer = block.prev_block_hash
-                    count -= 1
-                self.send_command(sender, chain)
-
-
-
-class SyncThread(BBProcess):
-    MAX_TIME_SYNC_NODES = 10
-
-    def __init__(self, hosts, bchain_thread):
-        super().__init__("Sync")
         self.masters = []
         self.miners = []
         self.client = client
-        self.bchain_thread = bchain_thread
+        self.nodes = nodes
         self.timer_sync_nodes = self.MAX_TIME_SYNC_NODES
 
     def _decrease_timers(self):
@@ -59,17 +38,41 @@ class SyncThread(BBProcess):
 
     def _sync_nodes(self):
         logger.info("Synchronizing Nodes")
-        for m in master:
-            ntype = self.client.get_node_type(m)
+        time.sleep(2)
+        masters_add = []
+        miners_add = []
+        for m in self.masters:
+            masters, miners = self.client.get_nodes(m)
+            masters_add.extend(masters)
+            miners_add.extend(miners)
+
+        self.masters.extend(masters_add)
+        self.miners.extend(miners_add)
+        self.masters = list(set(self.masters))
+        self.miners = list(set(self.miners))
 
     def run(self):
+        # Initial sync
+        self._sync_nodes()
+
+        logger.info("bbchain thread waiting commands...")
         while True:
+            time.sleep(1)
+            print("Empty?", not self.command_exists())
             if self.command_exists():
                 sender, command, *args = self.get_command()
-                logger.debug("> Sync Receiced command: " + command)
+
                 if command == "EXIT":
-                    logger.info("Exitting Sync Process")
+                    logger.info("Exitting BlockChain Process")
                     break
+                elif command == "GET_BLOCKS":
+                    chain = []
+                    while pointer and count > 0:
+                        block = self.bchain.db.get_block(pointer)
+                        chain.append(block.to_dict())
+                        pointer = block.prev_block_hash
+                        count -= 1
+                    self.send_command(sender, chain)
                 elif command == "ADD_NODE":
                     node_host = args[0]
                     node_type = args[1]
@@ -85,12 +88,12 @@ class SyncThread(BBProcess):
                     }
                     logger.debug("Sending nodes info:", nodes)
                     self.send_command(sender, nodes)
-
-            self._decrease_timers()
-            if self.timer_sync_nodes <= 0:
-                self._sync_nodes()
-                self.timer_sync_nodes = self.MAX_TIME_SYNC_NODES
-            time.sleep(1)
+            else:
+                self._decrease_timers()
+                if self.timer_sync_nodes <= 0:
+                    self._sync_nodes()
+                    self.timer_sync_nodes = self.MAX_TIME_SYNC_NODES
+                time.sleep(1)
 
 
 class HttpServerMaster(Server, SenderReceiver):
@@ -110,14 +113,14 @@ class HttpServerMaster(Server, SenderReceiver):
         info = request.json
         node_host = info['host']
         node_type = info['type']
-        self.send_command(self.sync_thread, "ADD_NODE", node_host, node_type)
+        self.send_command(self.bchain_thread, "ADD_NODE", node_host, node_type)
         return request.Response(json={'result': "OK"})
 
     def get_node_type(self, request):
         return request.Response(json={'type': "MASTER"})
 
     def get_nodes(self, request):
-        self.send_command(self.sync_thread, "NODES")
+        self.send_command(self.bchain_thread, "NODES")
         sender, result, *args = self.get_command()
         request.Response(json=result)
 
@@ -125,7 +128,7 @@ class HttpServerMaster(Server, SenderReceiver):
         count = int(request.query['count']) if 'count' in request.query else 10
         pointer = request.query['from_hash'] if 'from_hash' in request.query else self.bchain.last_hash
 
-        self.send_command(self.sync_thread, "GET_BLOCKS", count, pointer)
+        self.send_command(self.bchain_thread, "GET_BLOCKS", count, pointer)
         sender, result, *args = self.get_command()
 
         return request.Response(json={ 'chain': result})
@@ -142,10 +145,7 @@ class HttpServerMaster(Server, SenderReceiver):
     def start(self):
         hosts = ["http://" + c for c in self.nodes] if self.nodes else []
 
-        self.bchain_thread = BlockchainThread(self.bchain)
-        self.sync_thread = SyncThread(hosts, self.bchain_thread)
-
-        self.sync_thread.start()
+        self.bchain_thread = BlockchainThread(self.bchain, hosts)
         self.bchain_thread.start()
 
         self.start_api()
@@ -153,7 +153,4 @@ class HttpServerMaster(Server, SenderReceiver):
         logger.info("Exitting API Process")
 
         self.send_command(self.bchain_thread, "EXIT")
-        self.send_command(self.sync_thread, "EXIT")
-
-        self.sync_thread.join()
         self.bchain_thread.join()
