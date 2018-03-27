@@ -14,27 +14,32 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import sys
-from japronto import Application
-from bbchain.net.network import Server
+from aiohttp import web
+from bbchain.net.network import Server, BBProcess, SenderReceiver
+from bbchain.settings import logger
 
-class HttpServerMiner(Server):
-	def __init__(self, host, port, bc, nodes, client):
-		super().__init__(host, port, bc, ["http://" + c for c in nodes] if nodes else [], client)
+class HttpServerMiner(Server, SenderReceiver):
+	def __init__(self, host, port, bc, nodes):
+		super().__init__(host, port, bc, [], None)
+		SenderReceiver.__init__(self)
+		self.nodes = nodes
 
-	def start(self):
-		app = Application()
-		app.router.add_route('/get_node_type', self.get_node_type)
-		app.router.add_route('/add_data', self.add_data)
-		app.router.add_route('/', self.help_miner)
-		app.run(debug=True, host=self.host, port=self.port)
+	async def help_miner(self, request):
+		help = {
+			"help": []
+		}
+		return web.json_response(help)
 
 	def get_node_type(self, request):
-		return request.Response(json={'type': "MINER"})
+		return web.json_response({'type': "MINER"})
 
-	def help_miner(self, request):
-		return request.Response(json={
-			"help": []
-		})
+	async def add_data(self, request):
+		return web.json_response({})
 
-	def add_data(self, request):
-		return request.Response(json={"Status": "OK"})
+	def start(self):
+		app = web.Application()
+		app.add_routes([web.post('/add_data', self.add_data),
+						web.get('/get_node_type', self.get_node_type),
+						web.get('/', self.help_miner)])
+
+		web.run_app(app, host=self.host, port=self.port)

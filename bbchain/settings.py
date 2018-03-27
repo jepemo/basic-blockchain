@@ -18,9 +18,6 @@ import coloredlogs, logging
 logger = logging.getLogger(__name__)
 coloredlogs.install(level='DEBUG')
 
-from bbchain.net.http.client import HttpClient
-client = HttpClient()
-
 from bbchain.net.http.master import HttpServerMaster
 Master = HttpServerMaster
 
