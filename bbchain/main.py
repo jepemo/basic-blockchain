@@ -54,7 +54,10 @@ def main():
     elif args.print:
         bc.print()
     elif args.add:
-        bc.add_data(args.add)
+        from bbchain.settings import Client
+        client = Client()
+        client.add_data(args.nodes, args.add)
+        # bc.add_data(args.add)
     elif args.start_master:
         from bbchain.settings import Master
         server = Master(args.host, args.port, bc, args.nodes)

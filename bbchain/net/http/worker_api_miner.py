@@ -41,7 +41,9 @@ class WorkerApiMiner(SenderReceiver):
         return web.json_response(result)
 
     async def add_data(self, request):
-        return web.json_response({})
+        # 1 - Calculate block
+        # 2 - Send block to master node
+        return web.json_response({ "result": "OK"})
 
     def start(self):
         app = web.Application()

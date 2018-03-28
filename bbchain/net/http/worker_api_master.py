@@ -60,9 +60,15 @@ class WorkerApiMaster(SenderReceiver):
 
         return web.json_response({ 'chain': result})
 
+    async def add_data(self, request):
+        data = request.json()["data"]
+        self.send_command(self.sync_thread, "ADD_DATA", data)
+        return web.json_response({'result': "OK"})
+
     def start(self):
         app = web.Application()
         app.add_routes([web.post('/connect', self.connect),
+                        web.post('/add_data', self.add_data),
                         web.get('/get_nodes', self.get_nodes),
                         web.get('/get_node_type', self.get_node_type),
                         web.get('/get_blocks', self.get_blocks),

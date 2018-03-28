@@ -44,9 +44,6 @@ setup(
     # Choose your license
     license='GPL-v3',
 
-    setup_requires=['pytest-runner', ],
-    tests_require=['pytest', ],
-
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are

@@ -37,3 +37,13 @@ class HttpClient(Client):
 		})
 		json_resp = r.json()
 		return json_resp["result"] == "OK"
+
+	def add_data(self, nodes, data):
+		# We only select one master node
+		master = nodes[0]
+		master_addr = "http://" + master
+		r = requests.post(master_addr, data={
+		
+		})
+		json_resp = r.json()
+		return json_resp["result"] == "OK"

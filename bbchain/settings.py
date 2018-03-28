@@ -23,3 +23,6 @@ Master = HttpServerMaster
 
 from bbchain.net.http.miner import HttpServerMiner
 Miner = HttpServerMiner
+
+from bbcain.net.http.client import HttpClient
+Client = HttpClient
