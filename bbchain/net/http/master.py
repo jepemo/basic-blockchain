@@ -23,19 +23,20 @@ from bbchain.net.http.worker_sync import WorkerSync
 
 
 class HttpServerMaster(SenderReceiver):
-    def __init__(self, host, port, bc, nodes):
+    def __init__(self, host, port, bc, master_nodes):
         SenderReceiver.__init__(self)
         self.host = host
         self.port = port
         self.bchain = bc
-        self.nodes = nodes
+        self.master_nodes = master_nodes
 
     def start(self):
         self.bchain_worker = WorkerBlockchain(self.bchain)
         self.bchain_worker.start()
 
-        hosts = ["http://" + c for c in self.nodes] if self.nodes else []
-        self.sync_worker = WorkerSync(self.bchain_worker, hosts)
+        master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
+        node_addr = "http://{0}:{1}".format(self.host, self.port)
+        self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MASTER")
         self.sync_worker.start()
 
         api = WorkerApiMaster(self.host, self.port, self.sync_worker,

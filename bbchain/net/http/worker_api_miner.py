@@ -35,6 +35,11 @@ class WorkerApiMiner(SenderReceiver):
     async def get_node_type(self, request):
         return web.json_response({'type': "MINER"})
 
+    async def get_nodes(self, request):
+        self.send_command(self.sync_thread, "NODES")
+        sender, result, *args = self.get_command()
+        return web.json_response(result)
+
     async def add_data(self, request):
         return web.json_response({})
 
@@ -42,6 +47,7 @@ class WorkerApiMiner(SenderReceiver):
         app = web.Application()
         app.add_routes([web.post('/add_data', self.add_data),
                         web.get('/get_node_type', self.get_node_type),
+                        web.get('/get_nodes', self.get_nodes),
                         web.get('/', self.help_miner)])
 
         web.run_app(app, host=self.host, port=self.port)

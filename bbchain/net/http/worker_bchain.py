@@ -42,18 +42,3 @@ class WorkerBlockchain(BBProcess):
                         pointer = block.prev_block_hash
                         count -= 1
                     self.send_command(sender, chain)
-                elif command == "ADD_NODE":
-                    node_host = args[0]
-                    node_type = args[1]
-                    logger.debug("Adding Node {0} of type {1}".format(node_host, node_type))
-                    if node_type == "MASTER" and node_host not in self.masters:
-                        self.masters.append(node_host)
-                    elif node_type == "MINER" and node_host not in self.miners:
-                        self.miners.append(node_host)
-                elif command == "NODES":
-                    nodes = {
-                        'masters': self.masters,
-                        'miners': self.miners,
-                    }
-                    logger.debug("Sending nodes info:", nodes)
-                    self.send_command(sender, nodes)

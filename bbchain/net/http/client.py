@@ -31,7 +31,7 @@ class HttpClient(Client):
 		return json_resp["masters"], json_resp["miners"]
 
 	def connect(self, addr, node_addr, node_type):
-		r = requests.post(addr + "/connect", data={
+		r = requests.post(addr + "/connect", json={
 			'host': node_addr,
 			'type': node_type
 		})

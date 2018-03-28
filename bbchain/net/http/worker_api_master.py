@@ -39,14 +39,14 @@ class WorkerApiMaster(SenderReceiver):
         info = await request.json()
         node_host = info['host']
         node_type = info['type']
-        self.send_command(self.bchain_thread, "ADD_NODE", node_host, node_type)
+        self.send_command(self.sync_thread, "ADD_NODE", node_host, node_type)
         return web.json_response({'result': "OK"})
 
     async def get_node_type(self, request):
         return web.json_response({'type': "MASTER"})
 
     async def get_nodes(self, request):
-        self.send_command(self.bchain_thread, "NODES")
+        self.send_command(self.sync_thread, "NODES")
         sender, result, *args = self.get_command()
         return web.json_response(result)
 
