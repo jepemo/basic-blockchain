@@ -41,8 +41,8 @@ class WorkerApiMiner(SenderReceiver):
         return web.json_response(result)
 
     async def add_data(self, request):
-        # 1 - Calculate block
-        # 2 - Send block to master node
+        data = request.json()["data"]
+        self.send_command(self.bchain_thread, "CREATE_BLOCK", data)
         return web.json_response({ "result": "OK"})
 
     def start(self):

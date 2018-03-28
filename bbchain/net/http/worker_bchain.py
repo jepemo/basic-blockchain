@@ -23,6 +23,9 @@ class WorkerBlockchain(BBProcess):
         super().__init__("Blockchain")
         self.bchain = bc
 
+    def _create_block(self, data):
+        return self.bc.add_data(data)
+
     def run(self):
         logger.info("bbchain worker start...")
         while True:
@@ -42,3 +45,7 @@ class WorkerBlockchain(BBProcess):
                         pointer = block.prev_block_hash
                         count -= 1
                     self.send_command(sender, chain)
+                elif command == "CREATE_BLOCK":
+                    data = args[0]
+                    new_block = self._create_block(data)
+                    self.send_command(sender, block)

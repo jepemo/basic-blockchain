@@ -15,6 +15,7 @@
 
 import requests
 from bbchain.net.network import Client
+from bbchain.settings import logger
 
 class HttpClient(Client):
 	def __init__(self):
@@ -39,11 +40,34 @@ class HttpClient(Client):
 		return json_resp["result"] == "OK"
 
 	def add_data(self, nodes, data):
+		if not nodes or len(nodes) == 0:
+			logger.error("You need to specify a master node")
+			return False
+
 		# We only select one master node
 		master = nodes[0]
 		master_addr = "http://" + master
+
+		logger.debug("Sending {0} bytes of data to {1}".format(len(data), master_addr))
+
 		r = requests.post(master_addr, data={
-		
+			"data": data
+		})
+		json_resp = r.json()
+		return json_resp["result"] == "OK"
+
+	def send_data_to_miner(self, addr, data):
+		url = addr + "/add_data"
+		r = requests.post(url, data={
+			"data": data
+		})
+		json_resp = r.json()
+		return json_resp["result"] == "OK"
+
+	def send_block_to_master(self, addr, block):
+		url = addr + "/add_block"
+		r = requests.post(url, data={
+			"block": block
 		})
 		json_resp = r.json()
 		return json_resp["result"] == "OK"
