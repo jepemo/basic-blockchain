@@ -46,7 +46,7 @@ class HttpClient(Client):
 
 		# We only select one master node
 		master = nodes[0]
-		master_addr = "http://" + master
+		master_addr = "http://" + master + "/add_data"
 
 		logger.debug("Sending {0} bytes of data to {1}".format(len(data), master_addr))
 

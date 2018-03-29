@@ -35,10 +35,15 @@ class BlockChain(object):
 	def add_block(self, data):
 		new_block = Block(data, self.last_hash)
 		new_block.hash = self.consensus.calculate_hash(new_block)
+
+		self.add_checked_block(new_block)
+
+		return new_block
+
+	def add_checked_block(new_block):
 		self.db.add_block(new_block)
 		self.last_hash = self.db.get_last_hash()
 		assert new_block.hash == self.last_hash
-		return new_block
 
 	def create_genesis_block(self):
 		new_block = Block("Genesis Block", "")

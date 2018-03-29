@@ -61,14 +61,25 @@ class WorkerApiMaster(SenderReceiver):
         return web.json_response({ 'chain': result})
 
     async def add_data(self, request):
-        data = request.json()["data"]
+        content = await request.json()
+        data = content["data"]
         self.send_command(self.sync_thread, "ADD_DATA", data)
         return web.json_response({'result': "OK"})
+
+    async def add_block(self, request):
+        content = await request.json()
+        block = content["block"]
+
+        self.send_command(self.bchain_thread, "ADD_BLOCK", block)
+        # Aqui hay que comprobar si el bloque es valido o no antes de insertarlo
+        return web.json_response({'result': "OK"})
+
 
     def start(self):
         app = web.Application()
         app.add_routes([web.post('/connect', self.connect),
                         web.post('/add_data', self.add_data),
+                        web.post('/add_block', self.add_block),
                         web.get('/get_nodes', self.get_nodes),
                         web.get('/get_node_type', self.get_node_type),
                         web.get('/get_blocks', self.get_blocks),

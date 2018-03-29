@@ -49,3 +49,7 @@ class WorkerBlockchain(BBProcess):
                     data = args[0]
                     new_block = self._create_block(data)
                     self.send_command(sender, block)
+                elif command == "ADD_BLOCK":
+                    block = args[0]
+                    self.bc.add_checked_block(block)
+                    # Hay que devolver si el bloque es valido o no
