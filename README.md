@@ -26,12 +26,12 @@ To start a master node:
 ```bash
 bbchain --start-master
 ```
-But this node is alone, to connected to another master:
+But this node is alone. It can be connected to another master:
 ```bash
 bbchain --start-master --nodes ip1:port1,ip2:port2,etc
 ```
 
-For example, to start in local to master nodes:
+For example, to start in local two master nodes:
 ```
 bbchain --start-master --port 8000 &
 bbchain --start-master --port 8001 --nodes 127.0.0.1:8000
@@ -52,7 +52,6 @@ You can add data to the blockchain.
 ```
 bbchain --nodes 127.0.0.1:8000 --add "Some data"
 ```
-
 
 ## Development
 ```bash
@@ -77,12 +76,12 @@ Execute tests:
 ```
  -----------------------------------
 |  ---------------           -----  |           
-| | bchain worker | <------ | API | | <-------> Other bbchain nodes...
-|  ---------------           -----  |
-|        ^                     |    |
-|        |                     |    |
-|  --------------              |    |
-| | sync worker  | <-----------/    |
+| | bchain worker | <------ | API | | <---------\
+|  ---------------           -----  |           |
+|        ^                     |    |           |-> Other bbchain nodes...
+|        |                     |    |           |
+|  --------------              |    |           |
+| | sync worker  | <----------------------------/
 |  --------------                   |
  -----------------------------------
 ```
