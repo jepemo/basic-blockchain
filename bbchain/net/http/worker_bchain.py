@@ -24,7 +24,7 @@ class WorkerBlockchain(BBProcess):
         self.bchain = bc
 
     def _create_block(self, data):
-        return self.bc.add_data(data)
+        return self.bchain.add_data(data)
 
     def run(self):
         logger.info("bbchain worker start...")
@@ -48,8 +48,8 @@ class WorkerBlockchain(BBProcess):
                 elif command == "CREATE_BLOCK":
                     data = args[0]
                     new_block = self._create_block(data)
-                    self.send_command(sender, block)
+                    self.send_command(sender, new_block)
                 elif command == "ADD_BLOCK":
                     block = args[0]
-                    self.bc.add_checked_block(block)
+                    self.bchain.add_checked_block(block)
                     # Hay que devolver si el bloque es valido o no

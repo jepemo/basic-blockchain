@@ -50,7 +50,7 @@ class HttpClient(Client):
 
 		logger.debug("Sending {0} bytes of data to {1}".format(len(data), master_addr))
 
-		r = requests.post(master_addr, data={
+		r = requests.post(master_addr, json={
 			"data": data
 		})
 		json_resp = r.json()
@@ -58,7 +58,7 @@ class HttpClient(Client):
 
 	def send_data_to_miner(self, addr, data):
 		url = addr + "/add_data"
-		r = requests.post(url, data={
+		r = requests.post(url, json={
 			"data": data
 		})
 		json_resp = r.json()
@@ -66,7 +66,7 @@ class HttpClient(Client):
 
 	def send_block_to_master(self, addr, block):
 		url = addr + "/add_block"
-		r = requests.post(url, data={
+		r = requests.post(url, json={
 			"block": block
 		})
 		json_resp = r.json()

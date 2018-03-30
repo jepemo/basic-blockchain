@@ -40,7 +40,7 @@ class BlockChain(object):
 
 		return new_block
 
-	def add_checked_block(new_block):
+	def add_checked_block(self, new_block):
 		self.db.add_block(new_block)
 		self.last_hash = self.db.get_last_hash()
 		assert new_block.hash == self.last_hash
