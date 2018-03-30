@@ -45,25 +45,25 @@ def main():
 
     # print(args); sys.exit(0)
 
-    node_id = create_node_id(args)
-
-    bc = BlockChain.default(node_id)
-    if args.clean:
-        bc.clean_db()
-        sys.exit(0)
-    elif args.print:
-        bc.print()
-    elif args.add:
+    if args.add:
         from bbchain.settings import Client
         client = Client()
         client.add_data(args.nodes, args.add)
-    elif args.start_master:
-        from bbchain.settings import Master
-        server = Master(args.host, args.port, bc, args.nodes)
-        server.start()
-    elif args.start_miner:
-        from bbchain.settings import Miner
-        server = Miner(args.host, args.port, bc, args.nodes)
-        server.start()
     else:
-        parser.print_help()
+        node_id = create_node_id(args)
+        bc = BlockChain.default(node_id)
+        if args.clean:
+            bc.clean_db()
+            sys.exit(0)
+        elif args.print:
+            bc.print()
+        elif args.start_master:
+            from bbchain.settings import Master
+            server = Master(args.host, args.port, bc, args.nodes)
+            server.start()
+        elif args.start_miner:
+            from bbchain.settings import Miner
+            server = Miner(args.host, args.port, bc, args.nodes)
+            server.start()
+        else:
+            parser.print_help()

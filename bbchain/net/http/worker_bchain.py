@@ -47,9 +47,12 @@ class WorkerBlockchain(BBProcess):
                     self.send_command(sender, chain)
                 elif command == "CREATE_BLOCK":
                     data = args[0]
-                    new_block = self._create_block(data)
+                    last_hash = args[1]
+                    new_block = self._create_block(data, last_hash)
                     self.send_command(sender, new_block)
                 elif command == "ADD_BLOCK":
                     block = args[0]
                     self.bchain.add_checked_block(block)
                     # Hay que devolver si el bloque es valido o no
+                elif command == "GET_LAST_HASH":
+                    self.send_command(sender, self.bchain.last_hash)

@@ -63,7 +63,7 @@ class WorkerApiMaster(SenderReceiver):
     async def add_data(self, request):
         content = await request.json()
         data = content["data"]
-        self.send_command(self.sync_thread, "ADD_DATA", data)
+        self.send_command(self.sync_thread, "ADD_DATA_TO_MINER", data)
         return web.json_response({'result': "OK"})
 
     async def add_block(self, request):

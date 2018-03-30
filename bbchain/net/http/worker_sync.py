@@ -22,7 +22,6 @@ from bbchain.net.http.client import HttpClient
 class WorkerSync(BBProcess):
     MAX_TIME_SYNC_NODES = 120
     MAX_TIME_SYNC_CHAIN = 60
-    #MAX_TIME_UPTD_CHAIN = 5
 
     def __init__(self, bc, master_nodes, node_addr, node_type):
         super().__init__("SyncWorker")
@@ -34,13 +33,10 @@ class WorkerSync(BBProcess):
         self.node_type = node_type
         self.timer_sync_nodes = self.MAX_TIME_SYNC_NODES
         self.timer_sync_chain = self.MAX_TIME_SYNC_CHAIN
-        #self.timer_uptd_chain = self.MAX_TIME_UPTD_CHAIN
-        #self.last_hash = None
 
     def _decrease_timers(self):
         self.timer_sync_nodes -= 1
         self.timer_sync_chain -= 1
-        #self.timer_uptd_chain -= 1
 
     def _sync_nodes(self):
         logger.info("Synchronizing Nodes")
@@ -56,13 +52,6 @@ class WorkerSync(BBProcess):
         self.miners.extend(miners_add)
         self.masters = list(set(self.masters))
         self.miners = list(set(self.miners))
-
-    """
-    def _update_hash(self):
-        self.send_command(self.bchain_worker, "GET_LAST_HASH")
-        sender, result, args = self.get_command()
-        self.last_hash = result
-    """
 
     def _sync_chain(self):
         logger.info("Synchronizing Chain")
@@ -80,22 +69,18 @@ class WorkerSync(BBProcess):
         elif node_type == "MINER" and node_host not in self.miners:
             self.miners.append(node_host)
 
-    def _add_data(self, data):
+    def _add_data(self, last_hash, data):
         if not self.miners or len(self.miners) == 0:
             logger.error("This node is not connected to any miner.")
             return
 
         for m in self.miners:
-            self.client.send_data_to_miner(m, data)
+            self.client.send_data_to_miner(m, last_hash, data)
 
-    """
-    def _check_updated_chain(self):
-        if not actual_hash:
-            self._update_hash()
-
-        actual_hash = self.last_hash
-        self._update_hash()
-    """
+    def _get_last_hash(self):
+        self.send_command(self.bchain_worker, "GET_LAST_HASH")
+        sender, last_hash, args = self.get_command()
+        return last_hash
 
     def _send_block_master(self, block):
         addr = self.masters[0]
@@ -104,11 +89,9 @@ class WorkerSync(BBProcess):
     def run(self):
         logger.info("sync worker start...")
 
-        # Initial sync
         self._connect()
         self._sync_nodes()
         self._sync_chain()
-        #self._update_hash()
 
         while True:
             if self.command_exists():
@@ -128,11 +111,11 @@ class WorkerSync(BBProcess):
                     }
                     logger.debug("Sending nodes info:", nodes)
                     self.send_command(sender, nodes)
-                elif command == "ADD_DATA":
+                elif command == "ADD_DATA_TO_MINER":
                     data = args[0]
-                    self._add_data(data)
-                    xx, block, zz = self.get_command()
-                    self._send_block_master(block)
+                    last_hash = self._get_last_hash()
+                    self._add_data(last_hash, data)
+                    #self._send_block_master(block)
             else:
                 self._decrease_timers()
                 if self.timer_sync_nodes <= 0:
@@ -141,7 +124,4 @@ class WorkerSync(BBProcess):
                 if self.timer_sync_chain <= 0:
                     self._sync_chain()
                     self.timer_sync_chain = self.MAX_TIME_SYNC_CHAIN
-                #if self.timer_uptd_chain <= 0
-                #    self._check_updated_chain()
-                #    self.timer_uptd_chain = self.MAX_TIME_UPTD_CHAIN
             time.sleep(1)

@@ -56,9 +56,10 @@ class HttpClient(Client):
 		json_resp = r.json()
 		return json_resp["result"] == "OK"
 
-	def send_data_to_miner(self, addr, data):
+	def send_data_to_miner(self, addr, last_hash, data):
 		url = addr + "/add_data"
 		r = requests.post(url, json={
+			"last_hash": last_hash,
 			"data": data
 		})
 		json_resp = r.json()

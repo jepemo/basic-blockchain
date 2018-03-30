@@ -43,7 +43,11 @@ class WorkerApiMiner(SenderReceiver):
     async def add_data(self, request):
         json_resp = await request.json()
         data = json_resp["data"]
-        self.send_command(self.bchain_thread, "CREATE_BLOCK", data)
+        last_hash = json_resp["last_hash"]
+        # Enviar a sync para que lo envie a bchain
+        # Luego sync lo envia a master
+        # Lo siguiente esta mal
+        self.send_command(self.bchain_thread, "CREATE_BLOCK", data, last_hash)
         return web.json_response({ "result": "OK"})
 
     def start(self):
