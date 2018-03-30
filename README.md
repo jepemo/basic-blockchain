@@ -1,12 +1,58 @@
 # basic-blockchain
 Basic cryptocurrency, based on blockchain, implemented in Python
 
+- [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Use](#use)
+- [Development](#development)
+- [Architecture](#architecture)
+- [Some readings](#some-readings)
+
 ## Getting Started
 
 ### Installation
 ```
 pip install bbchain
 ```
+
+### Use
+There are two types of nodes: masters and miners.
+
+#### Masters
+
+Masters have all the blockchain database, sync with other masters to stay update and send data to miners to create blocks.
+
+To start a master node:
+```bash
+bbchain --start-master
+```
+But this node is alone, to connected to another master:
+```bash
+bbchain --start-master --nodes ip1:port1,ip2:port2,etc
+```
+
+For example, to start in local to master nodes:
+```
+bbchain --start-master --port 8000 &
+bbchain --start-master --port 8001 --nodes 127.0.0.1:8000
+```
+
+#### Miners
+Miners are connected to master nodes and are waiting data to create blocks. Then, blocks are sent to master nodes.
+
+Miners nodes needs to be connected to a master node.
+```bash
+bbchain --start-miner --nodes 127.0.0.1:8000
+```
+
+#### Adding data to the blockchain.
+
+You can add data to the blockchain.
+
+```
+bbchain --nodes 127.0.0.1:8000 --add "Some data"
+```
+
 
 ## Development
 ```bash
@@ -21,10 +67,27 @@ bbchain --help
 
 Execute tests:
 ```
-  python setup.py test
+  make test
 ```
 
-## Inspired by
+## Architecture
+
+- **bbchain** node:
+
+```
+ -----------------------------------
+|  ---------------           -----  |           
+| | bchain worker | <------ | API | | <-------> Other bbchain nodes...
+|  ---------------           -----  |
+|        ^                     |    |
+|        |                     |    |
+|  --------------              |    |
+| | sync worker  | <-----------/    |
+|  --------------                   |
+ -----------------------------------
+```
+
+## Some readings
 * [Intro Blockchain Architecture](https://www.pluralsight.com/guides/software-engineering-best-practices/blockchain-architecture)
 * [Learn Blockchains by Building One](https://hackernoon.com/learn-blockchains-by-building-one-117428612f46?gi=9fbd0628b089)
 * Building Blochain in go:
