@@ -99,3 +99,4 @@ Execute tests:
   * [Part 7: Network](https://jeiwan.cc/posts/building-blockchain-in-go-part-7/)
 * [An anonymous proof-of-work blockchain (Implemented in Ruby)](https://github.com/alexdovzhanyn/odyn)
 * [Paper review. Blockchains from a distributed computing perspective](http://muratbuffalo.blogspot.com.es/2018/02/blockchains-from-distributed-computing.html)
+* [How To Become A Blockchain Developer: Crash Course!](https://blockgeeks.com/guides/blockchain-developer/)
