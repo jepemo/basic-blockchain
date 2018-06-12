@@ -13,37 +13,40 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from bbchain.net.network import SenderReceiver
+# from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
 from bbchain.net.http.worker_api_miner import WorkerApiMiner
 from bbchain.net.http.worker_bchain import WorkerBlockchain
 from bbchain.net.http.worker_sync import WorkerSync
 
 
-class HttpServerMiner(SenderReceiver):
+class HttpServerMiner():
 	def __init__(self, host, port, bc, master_nodes):
-		SenderReceiver.__init__(self)
+		# SenderReceiver.__init__(self)
 		self.port = port
 		self.host = host
 		self.master_nodes = master_nodes
 		self.bchain = bc
 
+	# def start(self):
+	# 	self.bchain_worker = WorkerBlockchain(self.bchain)
+	# 	self.bchain_worker.start()
+
+	# 	master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
+	# 	node_addr = "http://{0}:{1}".format(self.host, self.port)
+	# 	self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MINER")
+	# 	self.sync_worker.start()
+
+	# 	api = WorkerApiMiner(self.host, self.port, self.sync_worker,
+	# 					     self.bchain_worker)
+	# 	api.start()
+
+	# 	logger.info("Exitting API Miner Process")
+
+	# 	self.send_command(self.bchain_worker, "EXIT")
+	# 	self.send_command(self.sync_worker, "EXIT")
+	# 	self.bchain_worker.join()
+	# 	self.sync_worker.join()
+
 	def start(self):
-		self.bchain_worker = WorkerBlockchain(self.bchain)
-		self.bchain_worker.start()
-
-		master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
-		node_addr = "http://{0}:{1}".format(self.host, self.port)
-		self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MINER")
-		self.sync_worker.start()
-
-		api = WorkerApiMiner(self.host, self.port, self.sync_worker,
-						     self.bchain_worker)
-		api.start()
-
-		logger.info("Exitting API Miner Process")
-
-		self.send_command(self.bchain_worker, "EXIT")
-		self.send_command(self.sync_worker, "EXIT")
-		self.bchain_worker.join()
-		self.sync_worker.join()
+		pass

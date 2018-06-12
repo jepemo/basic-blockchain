@@ -15,37 +15,122 @@
 
 import queue
 import sys
+from aiohttp import web
 from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
-from bbchain.net.http.worker_api_master import WorkerApiMaster
-from bbchain.net.http.worker_bchain import WorkerBlockchain
-from bbchain.net.http.worker_sync import WorkerSync
+# from bbchain.net.http.worker_api_master import WorkerApiMaster
+# from bbchain.net.http.worker_bchain import WorkerBlockchain
+# from bbchain.net.http.worker_sync import WorkerSync
+from bbchain.net.http.client import HttpClient
 
 
-class HttpServerMaster(SenderReceiver):
+class HttpServerMaster():
     def __init__(self, host, port, bc, master_nodes):
-        SenderReceiver.__init__(self)
+        # SenderReceiver.__init__(self)
         self.host = host
         self.port = port
         self.bchain = bc
+        self.client = HttpClient()
         self.master_nodes = master_nodes
 
+        self.masters = master_nodes
+        self.miners = []
+
+    # def start(self):
+    #     self.bchain_worker = WorkerBlockchain(self.bchain)
+    #     self.bchain_worker.start()
+
+    #     master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
+    #     node_addr = "http://{0}:{1}".format(self.host, self.port)
+    #     self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MASTER")
+    #     self.sync_worker.start()
+
+    #     api = WorkerApiMaster(self.host, self.port, self.sync_worker,
+    #                           self.bchain_worker)
+    #     api.start()
+
+    #     logger.info("Exitting API Master Process")
+
+    #     self.send_command(self.bchain_worker, "EXIT")
+    #     self.send_command(self.sync_worker, "EXIT")
+    #     self.bchain_worker.join()
+    #     self.sync_worker.join()
+
+    async def connect(self, request):
+        info = await request.json()
+        node_host = info['host']
+        node_type = info['type']
+
+        logger.debug("Adding Node {0} of type {1}".format(node_host, node_type))
+        if node_type == "MASTER" and node_host not in self.masters:
+            self.masters.append(node_host)
+        elif node_type == "MINER" and node_host not in self.miners:
+            self.miners.append(node_host)
+
+    def _add_data(self, last_hash, data):
+        if not self.miners or len(self.miners) == 0:
+            logger.error("This node is not connected to any miner.")
+            return
+
+        for m in self.miners:
+            self.client.send_data_to_miner(m, last_hash, data)
+
+    def _get_last_hash(self):
+        return self.bchain.last_hash
+
+    async def add_data(self, request):
+        content = await request.json()
+        data = content["data"]
+        last_hash = self._get_last_hash()
+        self._add_data(last_hash, data)
+        return web.json_response({'result': "OK"})
+    
+    async def add_block(self, request):
+        content = await request.json()
+        block = content["block"]
+
+        self.bchain.add_checked_block(block)
+        return web.json_response({'result': "OK"})
+
+    async def get_nodes(self, request):
+        return web.json_response({
+            'masters': self.masters,
+            'miners': self.miners,
+        })
+
+    async def get_node_type(self, request):
+        return web.json_response({'type': "MASTER"})
+
+    async def get_blocks(self, request):
+        q = request.rel_url.query
+        count = int(q['count']) if 'count' in q else 10
+        pointer = q['from_hash'] if 'from_hash' in q else self.bchain.last_hash
+
+        chain = []
+        while pointer and count > 0:
+            block = self.bchain.db.get_block(pointer)
+            chain.append(block.to_dict())
+            pointer = block.prev_block_hash
+            count -= 1
+
+        return web.json_response({ 'chain': chain})
+
+    async def help_master(self, request):
+        help = {
+            "help": [
+                "get_blocks",
+            ]
+        }
+        return web.json_response(help)
+
     def start(self):
-        self.bchain_worker = WorkerBlockchain(self.bchain)
-        self.bchain_worker.start()
+        app = web.Application()
+        app.add_routes([web.post('/connect', self.connect),
+                        web.post('/add_data', self.add_data),
+                        web.post('/add_block', self.add_block),
+                        web.get('/get_nodes', self.get_nodes),
+                        web.get('/get_node_type', self.get_node_type),
+                        web.get('/get_blocks', self.get_blocks),
+                        web.get('/', self.help_master)])
 
-        master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
-        node_addr = "http://{0}:{1}".format(self.host, self.port)
-        self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MASTER")
-        self.sync_worker.start()
-
-        api = WorkerApiMaster(self.host, self.port, self.sync_worker,
-                              self.bchain_worker)
-        api.start()
-
-        logger.info("Exitting API Master Process")
-
-        self.send_command(self.bchain_worker, "EXIT")
-        self.send_command(self.sync_worker, "EXIT")
-        self.bchain_worker.join()
-        self.sync_worker.join()
+        web.run_app(app, host=self.host, port=self.port)
