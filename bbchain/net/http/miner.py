@@ -15,9 +15,10 @@
 
 # from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
-from bbchain.net.http.worker_api_miner import WorkerApiMiner
-from bbchain.net.http.worker_bchain import WorkerBlockchain
-from bbchain.net.http.worker_sync import WorkerSync
+from aiohttp import web
+# from bbchain.net.http.worker_api_miner import WorkerApiMiner
+# from bbchain.net.http.worker_bchain import WorkerBlockchain
+# from bbchain.net.http.worker_sync import WorkerSync
 
 
 class HttpServerMiner():
@@ -28,25 +29,41 @@ class HttpServerMiner():
 		self.master_nodes = master_nodes
 		self.bchain = bc
 
-	# def start(self):
-	# 	self.bchain_worker = WorkerBlockchain(self.bchain)
-	# 	self.bchain_worker.start()
+	async def help_miner(self, request):
+        help = {
+            "help": []
+        }
+        return web.json_response(help)
 
-	# 	master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
-	# 	node_addr = "http://{0}:{1}".format(self.host, self.port)
-	# 	self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MINER")
-	# 	self.sync_worker.start()
+    async def get_node_type(self, request):
+        return web.json_response({'type': "MINER"})
 
-	# 	api = WorkerApiMiner(self.host, self.port, self.sync_worker,
-	# 					     self.bchain_worker)
-	# 	api.start()
+    async def get_nodes(self, request):
+        self.send_command(self.sync_thread, "NODES")
+        sender, result, *args = self.get_command()
+        return web.json_response(result)
 
-	# 	logger.info("Exitting API Miner Process")
+	def _create_block(self, data):
+        return self.bchain.add_data(data)
 
-	# 	self.send_command(self.bchain_worker, "EXIT")
-	# 	self.send_command(self.sync_worker, "EXIT")
-	# 	self.bchain_worker.join()
-	# 	self.sync_worker.join()
+    async def add_data(self, request):
+        json_resp = await request.json()
+        data = json_resp["data"]
+        last_hash = json_resp["last_hash"]
+
+	 	new_block = self._create_block(data, last_hash)
+		
+        # Enviar a sync para que lo envie a bchain
+        # Luego sync lo envia a master
+        # Lo siguiente esta mal
+        self.send_command(self.bchain_thread, "CREATE_BLOCK", data, last_hash)
+        return web.json_response({ "result": "OK"})
 
 	def start(self):
-		pass
+		app = web.Application()
+        app.add_routes([web.post('/add_data', self.add_data),
+                        web.get('/get_node_type', self.get_node_type),
+                        web.get('/get_nodes', self.get_nodes),
+                        web.get('/', self.help_miner)])
+
+        web.run_app(app, host=self.host, port=self.port)

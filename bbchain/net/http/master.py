@@ -36,26 +36,6 @@ class HttpServerMaster():
         self.masters = master_nodes
         self.miners = []
 
-    # def start(self):
-    #     self.bchain_worker = WorkerBlockchain(self.bchain)
-    #     self.bchain_worker.start()
-
-    #     master_hosts = ["http://" + c for c in self.master_nodes] if self.master_nodes else []
-    #     node_addr = "http://{0}:{1}".format(self.host, self.port)
-    #     self.sync_worker = WorkerSync(self.bchain_worker, master_hosts, node_addr, "MASTER")
-    #     self.sync_worker.start()
-
-    #     api = WorkerApiMaster(self.host, self.port, self.sync_worker,
-    #                           self.bchain_worker)
-    #     api.start()
-
-    #     logger.info("Exitting API Master Process")
-
-    #     self.send_command(self.bchain_worker, "EXIT")
-    #     self.send_command(self.sync_worker, "EXIT")
-    #     self.bchain_worker.join()
-    #     self.sync_worker.join()
-
     async def connect(self, request):
         info = await request.json()
         node_host = info['host']
