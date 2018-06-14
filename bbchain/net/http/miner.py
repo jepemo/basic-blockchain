@@ -30,7 +30,7 @@ class HttpServerMiner():
 		self.bchain = bc
 
 	async def help_miner(self, request):
-        help = {
+		help = {
             "help": []
         }
         return web.json_response(help)
