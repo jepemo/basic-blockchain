@@ -29,6 +29,9 @@ class BlockChain(object):
 
 		self.last_hash = self.db.get_last_hash()
 
+	def get_last_hash(self):
+		return self.db.get_last_hash()
+
 	def add_data(self, data):
 		return self.add_block(data)
 

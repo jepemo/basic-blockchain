@@ -26,7 +26,7 @@ class HttpServerMiner(HttpServerBase):
             "help": []
         }
 
-    def _create_block(self, data):
+    def _create_block(self, data, last_hash):
         return self.bchain.add_data(data)
 
     async def add_data(self, request):
@@ -34,12 +34,12 @@ class HttpServerMiner(HttpServerBase):
         data = json_resp["data"]
         last_hash = json_resp["last_hash"]
 
-        new_block = self._create_block(data, last_hash)
+        if last_hash == self.bc.get_last_hash():
+            new_block = self._create_block(data, last_hash)
+        else:
+            # Download data from master
+            pass
 		
-        # Enviar a sync para que lo envie a bchain
-        # Luego sync lo envia a master
-        # Lo siguiente esta mal
-        #self.send_command(self.bchain_thread, "CREATE_BLOCK", data, last_hash)
         return web.json_response({ "result": "OK"})
 
     def start(self):
