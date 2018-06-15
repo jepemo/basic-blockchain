@@ -26,16 +26,13 @@ class HttpServerMiner(HttpServerBase):
             "help": []
         }
 
-    def _create_block(self, data, last_hash):
-        return self.bchain.add_data(data)
-
     async def add_data(self, request):
         json_resp = await request.json()
         data = json_resp["data"]
         last_hash = json_resp["last_hash"]
 
-        if last_hash == self.bc.get_last_hash():
-            new_block = self._create_block(data, last_hash)
+        if last_hash == self.bchain.get_last_hash():
+            new_block = self.bchain.add_data(data)
         else:
             # Download data from master
             pass
