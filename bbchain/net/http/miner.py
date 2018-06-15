@@ -31,13 +31,19 @@ class HttpServerMiner(HttpServerBase):
         data = json_resp["data"]
         last_hash = json_resp["last_hash"]
 
-        if last_hash == self.bchain.get_last_hash():
-            new_block = self.bchain.add_data(data)
-        else:
-            # Download data from master
-            pass
+        current_last_hash = self.bchain.get_last_hash()
+        if last_hash != current_last_hash:
+            master_node = self.masters[0]
+            blocks = self.client.get_bchain_from_master(master_node, current_last_hash)
+            for block in reversed(blocks):
+                self.bchain.add_checked_block(block)
+
+        new_block = self.bchain.add_data(data)
 		
-        return web.json_response({ "result": "OK"})
+        return web.json_response({ 
+            "result": "OK",
+            "block": new_block
+        })
 
     def start(self):
         app = web.Application()

@@ -69,7 +69,8 @@ class HttpServerMaster(HttpServerBase):
         while pointer and count > 0:
             block = self.bchain.db.get_block(pointer)
             chain.append(block.to_dict())
-            pointer = block.prev_block_hash
+            #pointer = block.prev_block_hash
+            pointer = block.next_block_hash
             count -= 1
 
         return web.json_response({ 'chain': chain})

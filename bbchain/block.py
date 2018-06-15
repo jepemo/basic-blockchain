@@ -21,13 +21,15 @@ class Block(object):
         self.data = data
         self.prev_block_hash = prev_block_hash
         self.hash = None
+        self.next_block_hash = None
 
     def to_dict(self):
         return {
             "hash": self.hash,
             "prev_block_hash": self.prev_block_hash, #.decode("utf-8"),
             "timestamp": self.timestamp,
-            "data": self.data
+            "data": self.data,
+            "next_block_hash": self.next_block_hash
         }
 
     @staticmethod
@@ -38,4 +40,5 @@ class Block(object):
         )
         block.timestamp = float(d["timestamp"])
         block.hash = d["hash"]
+        block.next_block_hash = d["next_block_hash"]
         return block

@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import requests
+import time
 from bbchain.net.network import Client
 from bbchain.settings import logger
 
@@ -72,3 +73,24 @@ class HttpClient(Client):
 		})
 		json_resp = r.json()
 		return json_resp["result"] == "OK"
+
+	def get_bchain_from_master(self, addr, last_hash):
+		actual_hash = last_hash
+		url = addr + "/get_blocks"
+		blocks = []
+
+		while True:
+			r = requests.get(url, json={
+				'from_hash' : actual_hash,
+			})
+
+			json_resp = r.json()
+			chain = json_resp["chain"]
+			if chain == []:
+				break
+			else:
+				blocks.extend(chain)
+				actual_hash = chain[-1]['hash']
+				time.sleep(1)
+
+		return blocks

@@ -45,8 +45,14 @@ class BlockChain(object):
 
 	def add_checked_block(self, new_block):
 		self.db.add_block(new_block)
-		self.last_hash = self.db.get_last_hash()
+		lhash = self.db.get_last_hash()
+		self.last_hash = lhash
 		assert new_block.hash == self.last_hash
+
+		# Update last block
+		last_block = self.db.get_block(new_block.prev_block_hash)
+		last_block.next_block_hash = lhash
+		self.db.add_block(last_block)
 
 	def create_genesis_block(self):
 		new_block = Block("Genesis Block", "")
