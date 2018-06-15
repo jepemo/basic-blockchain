@@ -18,23 +18,11 @@ import sys
 from aiohttp import web
 from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
-# from bbchain.net.http.worker_api_master import WorkerApiMaster
-# from bbchain.net.http.worker_bchain import WorkerBlockchain
-# from bbchain.net.http.worker_sync import WorkerSync
-from bbchain.net.http.client import HttpClient
+from bbchain.net.http.base import HttpServerBase
 
-
-class HttpServerMaster():
+class HttpServerMaster(HttpServerBase):
     def __init__(self, host, port, bc, master_nodes):
-        # SenderReceiver.__init__(self)
-        self.host = host
-        self.port = port
-        self.bchain = bc
-        self.client = HttpClient()
-        self.master_nodes = master_nodes
-
-        self.masters = master_nodes
-        self.miners = []
+        HttpServerBase.__init__(host, port, bc, master_nodes, "MASTER")
 
     async def connect(self, request):
         info = await request.json()
@@ -72,15 +60,6 @@ class HttpServerMaster():
         self.bchain.add_checked_block(block)
         return web.json_response({'result': "OK"})
 
-    async def get_nodes(self, request):
-        return web.json_response({
-            'masters': self.masters,
-            'miners': self.miners,
-        })
-
-    async def get_node_type(self, request):
-        return web.json_response({'type': "MASTER"})
-
     async def get_blocks(self, request):
         q = request.rel_url.query
         count = int(q['count']) if 'count' in q else 10
@@ -95,13 +74,12 @@ class HttpServerMaster():
 
         return web.json_response({ 'chain': chain})
 
-    async def help_master(self, request):
-        help = {
+    def get_help(self):
+        return {
             "help": [
                 "get_blocks",
             ]
         }
-        return web.json_response(help)
 
     def start(self):
         app = web.Application()
@@ -111,6 +89,6 @@ class HttpServerMaster():
                         web.get('/get_nodes', self.get_nodes),
                         web.get('/get_node_type', self.get_node_type),
                         web.get('/get_blocks', self.get_blocks),
-                        web.get('/', self.help_master)])
+                        web.get('/', self.help_node)])
 
         web.run_app(app, host=self.host, port=self.port)

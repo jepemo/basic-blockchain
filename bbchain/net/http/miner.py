@@ -13,37 +13,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# from bbchain.net.network import SenderReceiver
 from bbchain.settings import logger
 from aiohttp import web
-# from bbchain.net.http.worker_api_miner import WorkerApiMiner
-# from bbchain.net.http.worker_bchain import WorkerBlockchain
-# from bbchain.net.http.worker_sync import WorkerSync
+from bbchain.net.http.base import HttpServerBase
 
+class HttpServerMiner(HttpServerBase):
+    def __init__(self, host, port, bc, master_nodes):
+        HttpServerBase.__init__(host, port, bc, master_nodes, "MINER")
 
-class HttpServerMiner():
-	def __init__(self, host, port, bc, master_nodes):
-		# SenderReceiver.__init__(self)
-		self.port = port
-		self.host = host
-		self.master_nodes = master_nodes
-		self.bchain = bc
-
-	async def help_miner(self, request):
-		help = {
+    def get_help(self):
+        return {
             "help": []
         }
-        return web.json_response(help)
 
-    async def get_node_type(self, request):
-        return web.json_response({'type': "MINER"})
-
-    async def get_nodes(self, request):
-        self.send_command(self.sync_thread, "NODES")
-        sender, result, *args = self.get_command()
-        return web.json_response(result)
-
-	def _create_block(self, data):
+    def _create_block(self, data):
         return self.bchain.add_data(data)
 
     async def add_data(self, request):
@@ -51,19 +34,19 @@ class HttpServerMiner():
         data = json_resp["data"]
         last_hash = json_resp["last_hash"]
 
-	 	new_block = self._create_block(data, last_hash)
+        new_block = self._create_block(data, last_hash)
 		
         # Enviar a sync para que lo envie a bchain
         # Luego sync lo envia a master
         # Lo siguiente esta mal
-        self.send_command(self.bchain_thread, "CREATE_BLOCK", data, last_hash)
+        #self.send_command(self.bchain_thread, "CREATE_BLOCK", data, last_hash)
         return web.json_response({ "result": "OK"})
 
-	def start(self):
-		app = web.Application()
+    def start(self):
+        app = web.Application()
         app.add_routes([web.post('/add_data', self.add_data),
                         web.get('/get_node_type', self.get_node_type),
                         web.get('/get_nodes', self.get_nodes),
-                        web.get('/', self.help_miner)])
+                        web.get('/', self.help_node)])
 
         web.run_app(app, host=self.host, port=self.port)
