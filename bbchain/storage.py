@@ -29,6 +29,32 @@ class DB(object):
     def is_empty(self):
         raise Exception("Not Implemented")
 
+class MemoryDB(DB):
+    def __init__(self):
+        self.db = {}
+        self.last_hash_key = "l"
+
+    def _block_key(self, _hash):
+        return "b" + _hash
+
+    def add_block(self, _block):
+        key = self._block_key(_block.hash)
+        self.db[key] = _block
+        self.db[self.last_hash_key] = key
+
+    def get_block(self, _hash):
+        key = self._block_key(_hash)
+        return self.db[key]
+
+    def clean_db(self):
+        self.db = []
+
+    def get_last_hash(self):
+        return self.db[self.last_hash_key]
+
+    def is_empty(self):
+        return len(self.db) == 0
+
 
 class ShelveDB(DB):
     shelve = None
@@ -45,7 +71,7 @@ class ShelveDB(DB):
         key = self._block_key(_block.hash)
         with self.shelve.open(self.blocks_path) as db:
             db[key] = _block
-            db[self.last_hash_key] = _block.hash
+            db[self.last_hash_key] = key
 
     def get_block(self, _hash):
         block = None
