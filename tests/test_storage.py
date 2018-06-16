@@ -12,17 +12,11 @@
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import unittest
 
-import coloredlogs, logging
+from bbchain.storage import MemoryDB
 
-logger = logging.getLogger(__name__)
-coloredlogs.install(level='DEBUG')
-
-#from bbchain.net.http.master import HttpServerMaster
-#Master = HttpServerMaster
-
-#from bbchain.net.http.miner import HttpServerMiner
-#Miner = HttpServerMiner
-
-#from bbchain.net.http.client import HttpClient
-#Client = HttpClient
+class TestMemoryDb(unittest.TestCase):
+    def test_add_block(self):
+        db = MemoryDB()
+        self.assertEqual(True, True)
