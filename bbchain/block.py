@@ -33,7 +33,7 @@ class Block(object):
         }
 
     @staticmethod
-    def from_dict(self, d):
+    def from_dict(d):
         block = Block(
             d["data"],
             d["prev_block_hash"]
