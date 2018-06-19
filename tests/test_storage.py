@@ -15,8 +15,64 @@
 import unittest
 
 from bbchain.storage import MemoryDB
+from bbchain.block import Block
 
 class TestMemoryDb(unittest.TestCase):
+    def create_block(self, data='abcdefghijklmnopqkrsuvwxyz', prev_hash='0000000000000000000000'):
+        block = Block(data, prev_hash)
+        return block
+
     def test_add_block(self):
         db = MemoryDB()
-        self.assertEqual(True, True)
+
+        myhash = 'myhash'
+        block = self.create_block()
+        block.hash = myhash
+        
+        key = db.add_block(block)
+
+        self.assertIsNotNone(key)
+
+    def test_get_block(self):
+        db = MemoryDB()
+        
+        myhash = 'myhash'
+        block = self.create_block()
+        block.hash = myhash
+
+        key = db.add_block(block)
+
+        saved_block = db.get_block(myhash)
+        self.assertIsNotNone(saved_block)
+        self.assertEqual(saved_block.hash, myhash)
+
+        saved_block = db.get_block(key)
+        self.assertIsNotNone(saved_block)
+        self.assertEqual(saved_block.hash, myhash)
+
+    def test_clean_db(self):
+        db = MemoryDB()
+
+        myhash = 'myhash'
+        block = self.create_block()
+        block.hash = myhash
+        db.add_block(block)
+
+        self.assertTrue(not db.is_empty())
+
+        db.clean_db()
+
+        self.assertTrue(db.is_empty())
+
+    
+    def test_last_hash(self):
+        db = MemoryDB()
+
+        myhash = 'myhash'
+        block = self.create_block()
+        block.hash = myhash
+
+        key = db.add_block(block)
+        last_key = db.get_last_hash()
+
+        self.assertEqual(key, last_key)

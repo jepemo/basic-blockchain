@@ -35,12 +35,18 @@ class MemoryDB(DB):
         self.last_hash_key = "l"
 
     def _block_key(self, _hash):
-        return "b" + _hash
+        assert _hash is not None
+
+        if _hash.startswith("b"):
+            return _hash
+        else:
+            return "b" + _hash
 
     def add_block(self, _block):
         key = self._block_key(_block.hash)
         self.db[key] = _block
         self.db[self.last_hash_key] = key
+        return key
 
     def get_block(self, _hash):
         key = self._block_key(_hash)
