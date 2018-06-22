@@ -56,7 +56,8 @@ class MemoryDB(DB):
         self.db = []
 
     def get_last_hash(self):
-        return self.db[self.last_hash_key]
+        key = self.last_hash_key
+        return self.db[key] if key in self.db else None
 
     def is_empty(self):
         return len(self.db) == 0

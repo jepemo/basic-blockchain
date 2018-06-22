@@ -29,7 +29,6 @@ class TestBlock(unittest.TestCase):
         self.assertEqual(bdict['prev_block_hash'], prev)
         self.assertIsNotNone(bdict['timestamp'])
         self.assertEqual(bdict['data'], data)
-        self.assertIsNone(bdict['next_block_hash'])
 
 
     def test_block_fromdict(self):
@@ -37,14 +36,12 @@ class TestBlock(unittest.TestCase):
         prev = '0000000000'
         h = '111111111'
         t = '1234567890'
-        next_block = '1111111111'
 
         dblock = {
             'hash': h,
             'prev_block_hash': prev,
             'timestamp': t,
             'data': data,
-            'next_block_hash': next_block
         }
 
         block = Block.from_dict(dblock)
@@ -53,4 +50,3 @@ class TestBlock(unittest.TestCase):
         self.assertEqual(block.prev_block_hash, prev)
         self.assertTrue(isinstance(block.timestamp, float))
         self.assertEqual(block.data, data)
-        self.assertEqual(block.next_block_hash, next_block)

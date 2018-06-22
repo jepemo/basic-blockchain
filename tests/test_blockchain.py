@@ -12,30 +12,20 @@
 # GNU General Public License for more details.
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
+import unittest
 
-import time
+from bbchain.blockchain import BlockChain
+from bbchain.storage import MemoryDB
+from bbchain.consensus import SimpleConsensus
+from bbchain.settings import logger
 
-class Block(object):
-    def __init__(self, data, prev_block_hash):
-        self.timestamp = time.time()
-        self.data = data
-        self.prev_block_hash = prev_block_hash
-        self.hash = None
+class TestBlockchain(unittest.TestCase):
+    def default_bc(self):
+        mm = MemoryDB()
+        cons = SimpleConsensus()
+        return BlockChain(mm, cons)
 
-    def to_dict(self):
-        return {
-            "hash": self.hash,
-            "prev_block_hash": self.prev_block_hash, #.decode("utf-8"),
-            "timestamp": self.timestamp,
-            "data": self.data,
-        }
-
-    @staticmethod
-    def from_dict(d):
-        block = Block(
-            d["data"],
-            d["prev_block_hash"]
-        )
-        block.timestamp = float(d["timestamp"])
-        block.hash = d["hash"]
-        return block
+    def test_init(self):
+        logger.disabled = True
+        bc = self.default_bc()
+        self.assertIsNotNone(bc.get_last_hash())

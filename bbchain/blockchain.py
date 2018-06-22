@@ -17,13 +17,14 @@ import binascii
 from bbchain.block import Block
 from bbchain.storage import create_db
 from bbchain.consensus import create_consensus
+from bbchain.settings import logger
 
 class BlockChain(object):
 	def __init__(self, db, consensus):
 		self.db = db
 		self.consensus = consensus
 
-		if not self.db.is_empty():
+		if self.db.is_empty():
 			genesis = self.create_genesis_block()
 			self.db.add_block(genesis)
 
@@ -50,11 +51,12 @@ class BlockChain(object):
 		assert new_block.hash == self.last_hash
 
 		# Update last block
-		last_block = self.db.get_block(new_block.prev_block_hash)
-		last_block.next_block_hash = lhash
-		self.db.add_block(last_block)
+		#last_block = self.db.get_block(new_block.prev_block_hash)
+		#last_block.next_block_hash = lhash
+		#self.db.add_block(last_block)
 
 	def create_genesis_block(self):
+		logger.info("Creating genesis block")
 		new_block = Block("Genesis Block", "")
 		new_block.hash = self.consensus.calculate_hash(new_block)
 		return new_block
