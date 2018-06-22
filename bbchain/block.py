@@ -30,6 +30,10 @@ class Block(object):
             "data": self.data,
         }
 
+    def __str__(self):
+        import json
+        return json.dumps(self.to_dict())
+
     @staticmethod
     def from_dict(d):
         block = Block(

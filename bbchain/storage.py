@@ -44,6 +44,7 @@ class MemoryDB(DB):
 
     def add_block(self, _block):
         key = self._block_key(_block.hash)
+        _block.hash = key
         self.db[key] = _block
         self.db[self.last_hash_key] = key
         return key

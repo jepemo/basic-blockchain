@@ -29,3 +29,13 @@ class TestBlockchain(unittest.TestCase):
         logger.disabled = True
         bc = self.default_bc()
         self.assertIsNotNone(bc.get_last_hash())
+
+    def test_add_data(self):
+        logger.disabled = True
+        bc = self.default_bc()
+
+        data = "this data"
+        block = bc.add_data(data)
+        # print(str(b))
+        self.assertTrue(block.data == data)
+        self.assertIsNotNone(block.hash)

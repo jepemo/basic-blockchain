@@ -37,7 +37,7 @@ class BlockChain(object):
 		return self.add_block(data)
 
 	def add_block(self, data):
-		new_block = Block(data, self.last_hash)
+		new_block = Block(data, self.get_last_hash())
 		new_block.hash = self.consensus.calculate_hash(new_block)
 
 		self.add_checked_block(new_block)
@@ -48,6 +48,7 @@ class BlockChain(object):
 		self.db.add_block(new_block)
 		lhash = self.db.get_last_hash()
 		self.last_hash = lhash
+		#print("\n{}\n{}\n".format(new_block.hash, self.last_hash))
 		assert new_block.hash == self.last_hash
 
 		# Update last block
