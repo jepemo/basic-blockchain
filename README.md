@@ -100,3 +100,7 @@ Execute tests:
 * [An anonymous proof-of-work blockchain (Implemented in Ruby)](https://github.com/alexdovzhanyn/odyn)
 * [Paper review. Blockchains from a distributed computing perspective](http://muratbuffalo.blogspot.com.es/2018/02/blockchains-from-distributed-computing.html)
 * [How To Become A Blockchain Developer: Crash Course!](https://blockgeeks.com/guides/blockchain-developer/)
+* [500Lines or Less: Clustering by Consensus](http://aosabook.org/en/500L/clustering-by-consensus.html)
+* Building a Simple Blockchain in Python
+  * [Part 1](http://www.pyscoop.com/building-a-simple-blockchain-in-python/)
+  * [Part 2](http://www.pyscoop.com/building-a-simple-blockchain-in-python-part-2/)
