@@ -22,6 +22,7 @@ class HttpClient(Client):
 	def __init__(self):
 		pass
 
+	"""
 	def get_node_type(self, addr):
 		r = requests.get(addr + "/get_node_type")
 		json_resp = r.json()
@@ -94,3 +95,12 @@ class HttpClient(Client):
 				time.sleep(1)
 
 		return blocks
+	"""
+	
+	def get_chain(self, addr):
+		url = addr + "/get_chain"
+		r = requests.get(url)
+		json_resp = r.json()
+		chain = json_resp["chain"]
+
+		return chain

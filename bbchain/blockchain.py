@@ -52,6 +52,9 @@ class BlockChain(object):
 		self.last_hash = lhash
 		assert new_block.hash == self.last_hash
 
+	def get_block(self, hash):
+		return self.db.get_block(hash)
+
 	def create_genesis_block(self):
 		logger.info("Creating genesis block")
 		new_block = Block(["Genesis Block"], "")
