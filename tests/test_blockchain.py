@@ -34,8 +34,36 @@ class TestBlockchain(unittest.TestCase):
         logger.disabled = True
         bc = self.default_bc()
 
-        data = "this data"
-        block = bc.add_data(data)
-        # print(str(b))
-        self.assertTrue(block.data == data)
+        for ind in range(0, 5):
+            data = "data{0}".format(ind)
+            bc.add_data(data)
+        
+        for ind in range(0, 5):
+            data = "data{0}".format(ind)
+            self.assertTrue(bc.current_data[ind] == data)
+
+    def test_add_block(self):
+        logger.disabled = True
+        bc = self.default_bc()
+
+        for ind in range(0, 5):
+            data = "data{0}".format(ind)
+            bc.add_data(data)
+
+        block = bc.add_block()
         self.assertIsNotNone(block.hash)
+
+    def test_is_block_valid(self):
+        logger.disabled = True
+        bc = self.default_bc()
+
+        for ind in range(0, 5):
+            data = "data{0}".format(ind)
+            bc.add_data(data)
+
+        block = bc.add_block()
+
+        self.assertTrue(bc.is_block_valid(block))
+
+        block.hash = '123456'
+        self.assertFalse(bc.is_block_valid(block))

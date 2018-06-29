@@ -73,7 +73,10 @@ class ShelveDB(DB):
         self.last_hash_key = "l"
 
     def _block_key(self, _hash):
-        return "b" + _hash
+        if _hash.startswith("b"):
+            return _hash
+        else:
+            return "b" + _hash
 
     def add_block(self, _block):
         key = self._block_key(_block.hash)

@@ -23,6 +23,7 @@ class BlockChain(object):
 	def __init__(self, db, consensus):
 		self.db = db
 		self.consensus = consensus
+		self.current_data = []
 
 		if self.db.is_empty():
 			genesis = self.create_genesis_block()
@@ -34,10 +35,11 @@ class BlockChain(object):
 		return self.db.get_last_hash()
 
 	def add_data(self, data):
-		return self.add_block(data)
+		# return self.add_block(data)
+		self.current_data.append(data)
 
-	def add_block(self, data):
-		new_block = Block(data, self.get_last_hash())
+	def add_block(self):
+		new_block = Block(self.current_data, self.get_last_hash())
 		new_block.hash = self.consensus.calculate_hash(new_block)
 
 		self.add_checked_block(new_block)
@@ -48,22 +50,17 @@ class BlockChain(object):
 		self.db.add_block(new_block)
 		lhash = self.db.get_last_hash()
 		self.last_hash = lhash
-		#print("\n{}\n{}\n".format(new_block.hash, self.last_hash))
 		assert new_block.hash == self.last_hash
-
-		# Update last block
-		#last_block = self.db.get_block(new_block.prev_block_hash)
-		#last_block.next_block_hash = lhash
-		#self.db.add_block(last_block)
 
 	def create_genesis_block(self):
 		logger.info("Creating genesis block")
-		new_block = Block("Genesis Block", "")
+		new_block = Block(["Genesis Block"], "")
 		new_block.hash = self.consensus.calculate_hash(new_block)
 		return new_block
 
 	def is_block_valid(self, block):
-		return self.consensus.is_valid(block.hash)
+		new_hash = self.consensus.calculate_hash(block)
+		return block.hash.endswith(new_hash)
 
 	def clean_db(self):
 		self.db.clean_db()
