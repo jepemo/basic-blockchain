@@ -74,6 +74,10 @@ class HttpNode:
         if node_host not in self.hosts:
             self.hosts.append(node_host)
 
+        return {
+            "result": "OK"
+        }
+
     async def sync_chain(self, request):
         chains = {}
         max_chain_length = 0
@@ -87,10 +91,18 @@ class HttpNode:
         selected_chain = chains[max_chain_length]
         actual_chain = self._get_all_blocks()
 
-        if len(selected_chain) > len(actual_chain):
+        update_chain = len(selected_chain) > len(actual_chain)
+        if update_chain:
             self.bchain.clean_db()
             for block in reversed(selected_chain):
                 self.bchain.add_checked_block(block)
+
+        size = len(self._get_all_blocks())
+        return {
+            "result": "OK",
+            "updated": update_chain,
+            "size": size
+        }
     
     def start(self):
         app = web.Application()

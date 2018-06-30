@@ -29,14 +29,10 @@ def main():
     general_grp.add_argument("--port", type=int, help="Node Port", default="8000")
     general_grp.add_argument("--verbose", help="Verbose mode", action="store_true")
 
-    master_grp = parser.add_argument_group("Master node Options")
-    master_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")
-    master_grp.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
-    master_grp.add_argument("--start-master", help="Starts Node as a Master node", action="store_true")
-
-    miner_grp = parser.add_argument_group("Miner node Options")
-    miner_grp.add_argument("--start-miner", help="Starts Node as a Miner (validator) node",
-                           action="store_true")
+    node_grp = parser.add_argument_group("Node Options")
+    node_grp.add_argument("--clean", help="Delete & clean all (local) db files", action="store_true")
+    node_grp.add_argument("--print", help="Show all the blockchain blocks", action="store_true")
+    node_grp.add_argument("--start", help="Starts Node", action="store_true")
 
     client_grp = parser.add_argument_group("Client Options")
     client_grp.add_argument("--add", help="Adds data to the blockchain. Creating a new Block", type=str)
@@ -57,13 +53,9 @@ def main():
             sys.exit(0)
         elif args.print:
             bc.print()
-        elif args.start_master:
-            from bbchain.settings import Master
-            server = Master(args.host, args.port, bc, args.nodes)
-            server.start()
-        elif args.start_miner:
-            from bbchain.settings import Miner
-            server = Miner(args.host, args.port, bc, args.nodes)
-            server.start()
+        elif args.start:
+            from bbchain.settings import Node
+            node = Node(args.host, args.port, bc, args.nodes)
+            node.start()
         else:
             parser.print_help()

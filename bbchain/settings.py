@@ -24,5 +24,8 @@ coloredlogs.install(level='DEBUG')
 #from bbchain.net.http.miner import HttpServerMiner
 #Miner = HttpServerMiner
 
-#from bbchain.net.http.client import HttpClient
-#Client = HttpClient
+from bbchain.net.http.node import HttpNode
+Node = HttpNode
+
+from bbchain.net.http.client import HttpClient
+Client = HttpClient

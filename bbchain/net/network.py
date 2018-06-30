@@ -34,7 +34,7 @@ class Server:
 		self._init_nodes(nodes)
 		# print(self.masters, self.miners)
 
-	def start():
+	def start(self):
 		raise Exception("Not implemented")
 
 	def _init_nodes(self, nodes):
