@@ -51,7 +51,7 @@ class HttpNode:
             "block": new_block.to_dict()
         }
 
-    async def get_chain(self, request):
+    def _get_all_blocks(self):
         chain = []
         last_hash = self.bchain.last_hash
         while last_hash:
@@ -59,12 +59,13 @@ class HttpNode:
             chain.append(block)
             last_hash = block.prev_block_hash
 
+    async def get_chain(self, request):
+        chain = self._get_all_blocks()
         return {
             "result": "OK",
             "count": len(chain),
             "chain": [b.to_dict() for b in chain]
         }
-
 
     async def register_node(self, request):
         info = await request.json()
@@ -84,10 +85,14 @@ class HttpNode:
                 max_chain_length = chain_length
 
         selected_chain = chains[max_chain_length]
-        
+        actual_chain = self._get_all_blocks()
 
+        if len(selected_chain) > len(actual_chain):
+            self.bchain.clean_db()
+            for block in reversed(selected_chain):
+                self.bchain.add_checked_block(block)
     
-    def start():
+    def start(self):
         app = web.Application()
         app.add_routes([web.post('/add_data', self.add_data),
                         web.get('/add_block', self.add_block),
