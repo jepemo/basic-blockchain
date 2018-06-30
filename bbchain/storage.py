@@ -106,7 +106,8 @@ class ShelveDB(DB):
     def is_empty(self):
         empty = True
         with self.shelve.open(self.blocks_path) as db:
-            empty = self.last_hash_key in db
+            # empty = self.last_hash_key in db
+            empty = (len(list(db.keys())) == 0)
         return empty
 
 

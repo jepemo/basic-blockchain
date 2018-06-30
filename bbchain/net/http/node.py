@@ -24,6 +24,7 @@ class HttpNode:
         self.bchain = bc
         self.client = HttpClient()
         self.hosts = hosts
+        self.max_data = 1
 
     async def help(self, request):
         return {
@@ -36,7 +37,12 @@ class HttpNode:
             ]
         }
 
+    # def check_add_block(self):
+    #     if len(self.bchain.current_data) == self.max_data:
+    #         self.bchain.add_block()
+
     async def add_data(self, request):
+        # self.check_add_block()
         json_resp = await request.json()
         data = json_resp["data"]
         self.bchain.add_data(data)

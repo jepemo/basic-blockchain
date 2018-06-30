@@ -24,10 +24,11 @@ class BlockChain(object):
 		self.db = db
 		self.consensus = consensus
 		self.current_data = []
+		self.max_data = 1
 
 		if self.db.is_empty():
 			genesis = self.create_genesis_block()
-			self.db.add_block(genesis)
+			self.add_checked_block(genesis)
 
 		self.last_hash = self.db.get_last_hash()
 
@@ -35,6 +36,9 @@ class BlockChain(object):
 		return self.db.get_last_hash()
 
 	def add_data(self, data):
+		if len(self.current_data) ==  self.max_data:
+			self.add_block()
+
 		# return self.add_block(data)
 		self.current_data.append(data)
 
@@ -44,13 +48,15 @@ class BlockChain(object):
 
 		self.add_checked_block(new_block)
 
+		self.current_data = []
+
 		return new_block
 
 	def add_checked_block(self, new_block):
 		self.db.add_block(new_block)
 		lhash = self.db.get_last_hash()
 		self.last_hash = lhash
-		assert new_block.hash == self.last_hash
+		# assert new_block.hash == self.last_hash
 
 	def get_block(self, hash):
 		return self.db.get_block(hash)
