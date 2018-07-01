@@ -18,6 +18,9 @@ from bbchain.blockchain import BlockChain
 from bbchain.storage import MemoryDB
 from bbchain.consensus import SimpleConsensus
 
+# Check:
+# https://aiohttp.readthedocs.io/en/v0.22.3/testing.html
+
 class TestHttpNode(unittest.TestCase):
     def default_bc(self):
         mm = MemoryDB()
