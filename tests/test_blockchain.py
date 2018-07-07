@@ -37,9 +37,18 @@ class TestBlockchain(unittest.TestCase):
         for ind in range(0, 5):
             data = "data{0}".format(ind)
             bc.add_data(data)
+            bc.add_block()
         
-        for ind in range(0, 5):
-            data = "data{0}".format(ind)
+        print("\nDATOS:")
+        # for ind in reversed(range(0, 5)):
+        r = list(range(0, 5))
+        for ind in r:
+            i = list(reversed(r))[ind]
+            data = "data{0}".format(i)
+            # print(ind, i)
+            # print(bc.current_data)
+            # print(bc.current_data[ind].strip(), data.strip())
+            # print("-------")
             self.assertTrue(bc.current_data[ind] == data)
 
     def test_add_block(self):

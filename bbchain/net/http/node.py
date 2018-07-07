@@ -109,8 +109,8 @@ class HttpNode:
             "updated": update_chain,
             "size": size
         }
-    
-    def start(self):
+
+    def get_app(self):
         app = web.Application()
         app.add_routes([web.post('/add_data', self.add_data),
                         web.get('/add_block', self.add_block),
@@ -118,5 +118,8 @@ class HttpNode:
                         web.get('/sync_chain', self.sync_chain),
                         web.get('/register_node', self.register_node),
                         web.get('/', self.help)])
-
+        return app
+    
+    def start(self):
+        app = self.get_app()
         web.run_app(app, host=self.host, port=self.port)

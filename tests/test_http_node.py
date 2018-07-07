@@ -14,6 +14,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import unittest
+from aiohttp.test_utils import AioHTTPTestCase, unittest_run_loop
 from bbchain.blockchain import BlockChain
 from bbchain.storage import MemoryDB
 from bbchain.consensus import SimpleConsensus
@@ -21,7 +22,7 @@ from bbchain.consensus import SimpleConsensus
 # Check:
 # https://aiohttp.readthedocs.io/en/v0.22.3/testing.html
 
-class TestHttpNode(unittest.TestCase):
+class TestHttpNode(AioHTTPTestCase):
     def default_bc(self):
         mm = MemoryDB()
         cons = SimpleConsensus()
@@ -33,10 +34,18 @@ class TestHttpNode(unittest.TestCase):
     def tearDown(self):
         print("tearDown")
 
-    def test_start(self):
+    async def get_application(self):
         from bbchain.net.http.node import HttpNode
         Node = HttpNode
 
         bc = self.default_bc()
         node = Node('localhost', '8000', bc, [])
-        #node.start()
+        return node.get_app()
+
+    @unittest_run_loop
+    async def test_example(self):
+        request = await self.client.request("GET", "/")
+        assert request.status == 200
+        text = await request.json()
+        print(text)
+        # assert "Hello, world" in text
