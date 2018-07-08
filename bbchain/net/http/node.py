@@ -27,7 +27,7 @@ class HttpNode:
         self.max_data = 1
 
     async def help(self, request):
-        return {
+        return web.json_response({
             "help": [
                 { "/add_data" : "Adds data to the node buffer, waiting to be mined."},
                 { "/add_block" : "Mine and create a block"},
@@ -35,7 +35,7 @@ class HttpNode:
                 { "/sync_chain" : "Synchronizes the chain (the longest)"},
                 { "/register_node" : "Connects to another node"},
             ]
-        }
+        })
 
     # def check_add_block(self):
     #     if len(self.bchain.current_data) == self.max_data:
@@ -46,16 +46,16 @@ class HttpNode:
         json_resp = await request.json()
         data = json_resp["data"]
         self.bchain.add_data(data)
-        return {
+        return web.json_response({
             "result": "OK"
-        }
+        })
 
     async def add_block(self, request):
         new_block = self.bchain.add_block()
-        return {
+        return web.json_response({
             "result": "OK",
             "block": new_block.to_dict()
-        }
+        })
 
     def _get_all_blocks(self):
         chain = []
@@ -67,11 +67,11 @@ class HttpNode:
 
     async def get_chain(self, request):
         chain = self._get_all_blocks()
-        return {
+        return web.json_response({
             "result": "OK",
             "count": len(chain),
             "chain": [b.to_dict() for b in chain]
-        }
+        })
 
     async def register_node(self, request):
         info = await request.json()
@@ -80,9 +80,9 @@ class HttpNode:
         if node_host not in self.hosts:
             self.hosts.append(node_host)
 
-        return {
+        return web.json_response({
             "result": "OK"
-        }
+        })
 
     async def sync_chain(self, request):
         chains = {}
@@ -104,11 +104,11 @@ class HttpNode:
                 self.bchain.add_checked_block(block)
 
         size = len(self._get_all_blocks())
-        return {
+        return web.json_response({
             "result": "OK",
             "updated": update_chain,
             "size": size
-        }
+        })
 
     def get_app(self):
         app = web.Application()

@@ -30,53 +30,17 @@ class TestHttpNode(AioHTTPTestCase):
         cons = SimpleConsensus()
         return BlockChain(mm, cons)
 
-    # def setUp(self):
-    #     print("setup")
-
-    # def tearDown(self):
-    #     print("tearDown")
-
-    # async def get_application(self):
-    #     from bbchain.net.http.node import HttpNode
-    #     Node = HttpNode
-
-    #     bc = self.default_bc()
-    #     node = Node('localhost', '8000', bc, [])
-    #     return node.get_app()
-
-    # @unittest_run_loop
-    # async def test_example(self):
-    #     request = await self.client.request("GET", "/")
-    #     assert request.status == 200
-    #     text = await request.json()
-    #     print(text)
-    #     # assert "Hello, world" in text
-
     async def get_application(self):
         from bbchain.net.http.node import HttpNode
         Node = HttpNode
         bc = self.default_bc()
-        node = Node('127.0.0.1', '80', bc, [])
+        node = Node('localhost', '8080', bc, [])
         return node.get_app()
 
-
-        """
-        Override the get_app method to return your application.
-        """
-        # async def hello(request):
-        #     return web.Response(text='Hello, world')
-
-        # app = web.Application()
-        # app.router.add_get('/', hello)
-        # return app
-
-    # the unittest_run_loop decorator can be used in tandem with
-    # the AioHTTPTestCase to simplify running
-    # tests that are asynchronous
     @unittest_run_loop
-    async def test_example(self):
+    async def test_help(self):
         logger.disabled = True
         request = await self.client.request("GET", "/")
         assert request.status == 200
-        text = await request.text()
-        assert "Hello, world" in text
+        json_res = await request.json()
+        assert len(json_res["help"]) > 0
