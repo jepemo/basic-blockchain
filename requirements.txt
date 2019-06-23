@@ -1,7 +1,7 @@
 setuptools
 pytest
-uvloop==0.8.1
+# uvloop==0.8.1
 requests
 coloredlogs
-aiohttp
-pytest-aiohttp
+# aiohttp
+# pytest-aiohttp
